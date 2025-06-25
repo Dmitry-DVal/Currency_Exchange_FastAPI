@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 
-from сurrency_exchange_app.schemas.currency import CurrencyResponse, CurrencyCreate
+from currency_exchange_app.schemas.currency import CurrencyResponse, CurrencyCreate
 
 router = APIRouter(tags=["Валюты"])
 
@@ -44,18 +44,19 @@ async def get_currencies() -> list[CurrencyResponse]:  # Возвращает с
 
 @router.post(
     "/currencies",
+    status_code=201,
     response_model=CurrencyResponse,
     summary="Добавить валюту",
     description="Создаёт новую валюту в системе",
     response_description="Данные созданной валюты",
     responses={
-        400: {"description": "Валюта с таким кодом уже существует"},
+        409: {"description": "Валюты с таким кодом уже существует"},
         201: {"description": "Валюта успешно создана"}
     }
 )
 async def create_currency(currency_data: CurrencyCreate) -> CurrencyResponse:
     if any(c.code == currency_data.code for c in currencies):
-        raise HTTPException(status_code=400, detail="Currency already exists")
+        raise HTTPException(status_code=409, detail="Currency already exists")
 
     new_currency = CurrencyResponse(
         id=len(currencies) + 1,
@@ -63,3 +64,5 @@ async def create_currency(currency_data: CurrencyCreate) -> CurrencyResponse:
     )
     currencies.append(new_currency)
     return new_currency
+
+
