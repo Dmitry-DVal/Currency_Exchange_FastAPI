@@ -12,8 +12,14 @@ db.sqlite3
 *.sql
 *.sqlite3
 
-# Миграции Alembic
+# Отчеты покрытия тестов
+/htmlcov
+.coverage
 
+#mypy
+mypy.ini
+
+# Миграции Alembic
 
 # Прочее
 tasks.txt

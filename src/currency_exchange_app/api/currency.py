@@ -1,8 +1,13 @@
+import logging
+
 from fastapi import APIRouter, HTTPException
 
-from currency_exchange_app.schemas.currency import CurrencyResponse, CurrencyCreate
+from src.currency_exchange_app.schemas import CurrencyResponse, CurrencyCreate
 
 router = APIRouter(tags=["Валюты"])
+
+logger = logging.getLogger("currency_exchange_app")
+
 
 currencies = [
     CurrencyResponse(
@@ -28,6 +33,7 @@ currencies = [
 )
 async def get_currency(
         code: str) -> CurrencyResponse:  # Должна возвращать модель валюты
+    logger.debug("Запрос получения валюты: %s", code)
     currency = next((c for c in currencies if c.code == code.upper()), None)
     if not currency:
         raise HTTPException(status_code=404, detail="Currency not found")
@@ -39,6 +45,7 @@ async def get_currency(
             description="Возвращает полную информацию о всех валютых"
             )
 async def get_currencies() -> list[CurrencyResponse]:  # Возвращает список моделей
+    logger.debug("Запрос всех валют")
     return currencies
 
 
@@ -55,6 +62,7 @@ async def get_currencies() -> list[CurrencyResponse]:  # Возвращает с
     }
 )
 async def create_currency(currency_data: CurrencyCreate) -> CurrencyResponse:
+    logger.debug("Запрос добовления валюты: %s", currency_data.code)
     if any(c.code == currency_data.code for c in currencies):
         raise HTTPException(status_code=409, detail="Currency already exists")
 
@@ -64,5 +72,3 @@ async def create_currency(currency_data: CurrencyCreate) -> CurrencyResponse:
     )
     currencies.append(new_currency)
     return new_currency
-
-
