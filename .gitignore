@@ -1,5 +1,6 @@
 # Виртуальная среда, переменные окружения
 venvprod/
+.venv/
 venv/
 .env
 .venv
@@ -28,3 +29,4 @@ tasks.txt
 /logs
 .ruff_cache
 .mypy_cache
+.pytest_cache
