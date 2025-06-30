@@ -27,6 +27,9 @@ tasks.txt
 *.log
 /experiments
 /logs
+queries/
+base_test.py
+models_test.py
 .ruff_cache
 .mypy_cache
 .pytest_cache
