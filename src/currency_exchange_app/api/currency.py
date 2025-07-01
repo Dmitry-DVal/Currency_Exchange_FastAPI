@@ -1,74 +1,55 @@
+# src/currency_exchange_app/api/currency.py
 import logging
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.currency_exchange_app.schemas import CurrencyResponse, CurrencyCreate
+from src.currency_exchange_app.db import get_db
+from src.currency_exchange_app.repositories import CurrencyRepository
+from src.currency_exchange_app.schemas import CurrencyCreateDTO, CurrencyResponseDTO
 
 router = APIRouter(tags=["Валюты"])
 
 logger = logging.getLogger("currency_exchange_app")
 
 
-currencies = [
-    CurrencyResponse(
-        id=1,
-        name="United States dollar",
-        code="USD",
-        sign="$"
-    ),
-    CurrencyResponse(
-        id=2,
-        name="Euro",
-        code="EUR",
-        sign="€"
-    )
-]
-
-
-@router.get(
-    "/currency/{code}",
-    response_model=CurrencyResponse,
-    summary="Получить валюту по коду",
-    description="Возвращает полную информацию о валюте по её трёхбуквенному коду"
-)
+@router.get("/currency/{code}", response_model=CurrencyResponseDTO)
 async def get_currency(
-        code: str) -> CurrencyResponse:  # Должна возвращать модель валюты
-    logger.debug("Запрос получения валюты: %s", code)
-    currency = next((c for c in currencies if c.code == code.upper()), None)
+        code: str,
+        session: AsyncSession = Depends(get_db)
+) -> CurrencyResponseDTO:
+    logger.debug("Запрос добавления валюты: %s", code)
+
+    repo = CurrencyRepository(session)
+    currency = await repo.get_currency_by_code(code)
+
     if not currency:
         raise HTTPException(status_code=404, detail="Currency not found")
+
     return currency
 
 
-@router.get("/currencies",
-            summary="Получить все доступные валюты",
-            description="Возвращает полную информацию о всех валютых"
-            )
-async def get_currencies() -> list[CurrencyResponse]:  # Возвращает список моделей
-    logger.debug("Запрос всех валют")
-    return currencies
+@router.get("/currencies", response_model=list[CurrencyResponseDTO])
+async def get_currencies(
+        session: AsyncSession = Depends(get_db)
+) -> list[CurrencyResponseDTO] | None:
+    logger.debug("Запрос списка всех валют")
+
+    repo = CurrencyRepository(session)
+
+    return await repo.get_currencies()
 
 
-@router.post(
-    "/currencies",
-    status_code=201,
-    response_model=CurrencyResponse,
-    summary="Добавить валюту",
-    description="Создаёт новую валюту в системе",
-    response_description="Данные созданной валюты",
-    responses={
-        409: {"description": "Валюты с таким кодом уже существует"},
-        201: {"description": "Валюта успешно создана"}
-    }
-)
-async def create_currency(currency_data: CurrencyCreate) -> CurrencyResponse:
-    logger.debug("Запрос добовления валюты: %s", currency_data.code)
-    if any(c.code == currency_data.code for c in currencies):
-        raise HTTPException(status_code=409, detail="Currency already exists")
+@router.post("/currencies", response_model=CurrencyResponseDTO, status_code=201)
+async def create_currency(
+        currency_data: CurrencyCreateDTO,
+        session: AsyncSession = Depends(get_db)
+) -> CurrencyResponseDTO:
+    logger.debug("Запрос добавления валюты: %s", currency_data)
 
-    new_currency = CurrencyResponse(
-        id=len(currencies) + 1,
-        **currency_data.model_dump()
-    )
-    currencies.append(new_currency)
-    return new_currency
+    repo = CurrencyRepository(session)
+
+    try:
+        return await repo.create_currency(currency_data)
+    except ValueError as e:
+        raise HTTPException(status_code=409, detail=str(e))

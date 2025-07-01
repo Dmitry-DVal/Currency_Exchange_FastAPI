@@ -1,21 +1,26 @@
-from pydantic import BaseModel, Field, field_validator
+# src/currency_exchange_app/schemas/currency.py
+from pydantic import BaseModel, Field, field_validator, ConfigDict
 
 
-class CurrencyBase(BaseModel):
-    name: str = Field(min_length=3, max_length=50, examples=["United States dollar"],
-                      description="Полное название валюты")
+class CurrencyCodeDTO(BaseModel):
+    """Только код валюты для поиска"""
     code: str = Field(min_length=3, max_length=3, pattern=r"^[A-Za-z]+$",
-                      examples=["USD"])
-    sign: str = Field(min_length=1, max_length=3, examples=["$"])
+                      examples=["USD"], alias="Code")
 
     @field_validator("code")
-    def code_to_upper(cls, v):
+    def uppercase_code(cls, v):
         return v.upper()
 
 
-class CurrencyCreate(CurrencyBase):
-    pass
+class CurrencyCreateDTO(CurrencyCodeDTO):
+    """Данные для создания валюты"""
+    name: str = Field(min_length=3, max_length=50, examples=["United States dollar"],
+                      description="Полное название валюты", alias="FullName")
+    sign: str = Field(min_length=1, max_length=3, examples=["$"], alias="Sign")
 
 
-class CurrencyResponse(CurrencyBase):
-    id: int
+class CurrencyResponseDTO(CurrencyCreateDTO):
+    """Полные данные валюты (ответ API)"""
+    id: int = Field(alias="ID")
+
+    model_config = ConfigDict(from_attributes=True)

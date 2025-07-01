@@ -1,4 +1,4 @@
-from .currency import CurrencyResponse, CurrencyCreate
+from .currency import CurrencyCreateDTO, CurrencyResponseDTO
 
 
-__all__ = ["CurrencyResponse", "CurrencyCreate"]
+__all__ = ["CurrencyCreateDTO", "CurrencyResponseDTO"]

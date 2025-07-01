@@ -1,3 +1,4 @@
+# src/currency_exchange_app/db/engine.py
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
 from src.currency_exchange_app.config import settings
