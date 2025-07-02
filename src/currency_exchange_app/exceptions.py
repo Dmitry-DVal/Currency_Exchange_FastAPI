@@ -9,12 +9,14 @@ class AppBaseException(HTTPException):
 class CurrencyBaseException(HTTPException):
     """Базовое исключение для валюты"""
 
+
 class CurrencyCodeError(CurrencyBaseException):
     """
     400: Код валюты не корректен
     Пример:
         {"detail":"Код валюты -3245 не корректен."}
     """
+
     def __init__(self, detail: str = "Bad request"):
         super().__init__(status_code=status.HTTP_400_BAD_REQUEST, detail=detail)
 
@@ -29,6 +31,7 @@ class CurrencyNotFoundException(CurrencyBaseException):
     def __init__(self, detail: str = "Not found"):
         super().__init__(status_code=status.HTTP_404_NOT_FOUND, detail=detail)
 
+
 class DatabaseException(AppBaseException):
     """
     500: Ошибка базы данных или соединения.
@@ -42,7 +45,6 @@ class DatabaseException(AppBaseException):
         )
 
 
-
 class CurrencyAlreadyExistsException(CurrencyBaseException):
     """
     409: Валюта уже существует
@@ -52,5 +54,3 @@ class CurrencyAlreadyExistsException(CurrencyBaseException):
 
     def __init__(self, detail: str = "Currency already exists"):
         super().__init__(status_code=status.HTTP_409_CONFLICT, detail=detail)
-
-

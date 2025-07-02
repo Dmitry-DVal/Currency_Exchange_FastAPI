@@ -2,13 +2,16 @@
 import logging
 
 from pydantic import ValidationError
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.currency_exchange_app.exceptions import CurrencyCodeError
-from src.currency_exchange_app.exceptions import CurrencyNotFoundException, \
-    DatabaseException
+from src.currency_exchange_app.exceptions import (
+    CurrencyNotFoundException,
+    DatabaseException,
+    CurrencyCodeError,
+    CurrencyAlreadyExistsException,
+)
 from src.currency_exchange_app.repositories import CurrencyRepository
-from src.currency_exchange_app.schemas import CurrencyResponseDTO
+from src.currency_exchange_app.schemas import CurrencyResponseDTO, CurrencyCreateDTO
 from src.currency_exchange_app.schemas.currency import CurrencyCodeDTO
 
 logger = logging.getLogger("currency_exchange_app")
@@ -19,16 +22,15 @@ class CurrencyService:
         self.repo = CurrencyRepository(session)
 
     async def get_currency_by_code(self, code: str) -> CurrencyResponseDTO:
-
         try:
             validated_code = self._validate_code(code)
             currency = await self.repo.db_get_currency_by_code(validated_code)
-        except ValidationError as e:
+        except ValidationError:
             logger.warning("Invalid currency code %s", code)
             raise CurrencyCodeError(f"Код валюты {code} не корректен.")
         except SQLAlchemyError as e:
             logger.error("Ошибка SQLAlchemy: %s", e)
-            raise DatabaseException("Ошибка базы данных при поиске валюты")
+            raise DatabaseException("Ошибка базы данных")
         except Exception as e:
             logger.critical("Глобальная ошибка", exc_info=True)
             raise DatabaseException(str(e))
@@ -43,3 +45,33 @@ class CurrencyService:
         """Приватный метод валидации"""
         validated_code = CurrencyCodeDTO(code=code).code
         return validated_code
+
+    async def get_currencies(self) -> list[CurrencyResponseDTO]:
+        try:
+            currency_list = await self.repo.db_get_currencies()
+        except SQLAlchemyError as e:
+            logger.error("Ошибка SQLAlchemy: %s", e)
+            raise DatabaseException("Ошибка базы данных")
+        except Exception as e:
+            logger.critical("Глобальная ошибка", exc_info=True)
+            raise DatabaseException(str(e))
+
+        return currency_list
+
+    async def create_currency(
+        self, currency_data: CurrencyCreateDTO
+    ) -> CurrencyResponseDTO:
+        try:
+            new_currency = await self.repo.db_create_currency(currency_data)
+        except IntegrityError as e:
+            await self.repo.session.rollback()
+            logger.error("Currency exists: %s", e)
+            raise CurrencyAlreadyExistsException("Currency already exists")
+        except SQLAlchemyError as e:
+            logger.error("Ошибка SQLAlchemy: %s", e)
+            raise DatabaseException("Ошибка базы данных")
+        except Exception as e:
+            logger.critical("Глобальная ошибка", exc_info=True)
+            raise DatabaseException(str(e))
+
+        return new_currency
