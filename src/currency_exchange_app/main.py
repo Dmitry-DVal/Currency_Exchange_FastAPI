@@ -1,6 +1,8 @@
+# src/currency_exchange_app/main.py
 from fastapi import FastAPI
 
 from .api.currency import router as currency_router
+
 from .logger import logger
 
 logger.debug("🚀 Starting Currency Exchange app...")

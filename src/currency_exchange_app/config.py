@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     DB_NAME: str
 
     class Config:
-        env_file = Path(__file__).resolve().parent.parent.parent / '.env'
+        env_file = Path(__file__).resolve().parent.parent.parent / ".env"
 
     @property
     def DATABASE_URL(self):
@@ -19,18 +19,4 @@ class Settings(BaseSettings):
         return dsn
 
 
-
-settings = Settings()
-# print("→", settings.DATABASE_URL)
-
-
-# Конфигурация проекта
-# ENV-переменные
-#
-# настройки базы данных
-#
-# пути до ресурсов
-#
-# настройки внешних API
-#
-# порты, таймауты и т.д.
+settings = Settings()  # type: ignore
