@@ -5,9 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.currency_exchange_app.exceptions import (
-    AppBaseException,
     DatabaseException,
-    CurrencyNotFoundException,
     CurrencyAlreadyExistsException,
 )
 from src.currency_exchange_app.models import CurrenciesORM
@@ -20,33 +18,29 @@ class CurrencyRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_currency_by_code(
-        self, code: str
-    ) -> CurrencyResponseDTO | AppBaseException:
-        """Получаем валюту из БД по коду"""
-        stmt = select(CurrenciesORM).where(CurrenciesORM.Code == code.upper())
-        logger.debug("Построение запроса query: %s", stmt)
+    async def db_get_currency_by_code(self, code: str) -> CurrencyResponseDTO | None:
+        """Ищем валюту по коду. Возвращаем DTO или None (не найдено)."""
+        stmt = select(CurrenciesORM).where(CurrenciesORM.Code == code)
+        logger.debug("SQL запрос get_currency_by_code: %s", stmt)
 
-        try:
-            result = await self.session.execute(stmt)
-        except (SQLAlchemyError, Exception) as e:
-            logger.error("Database error: %s", e)
-            raise DatabaseException(str(e))
-
-        logger.debug("Raw result type: %s", type(result))
-
+        result = await self.session.execute(stmt)
         currency_orm = result.scalar_one_or_none()
-        logger.debug("Получение скаляра currency_orm: %s", currency_orm)
+        logger.debug("Получение скаляра currency_orm или None: %s", currency_orm)
 
-        if not currency_orm:
-            logger.error("Код валюты %s отсутствует или некорректен", code)
-            raise CurrencyNotFoundException(
-                f"Код валюты {code} отсутствует или некорректен."
-            )
+        if currency_orm:
+            return self._orm_to_dto(currency_orm)
+        return None
 
-        return CurrencyResponseDTO.model_validate(currency_orm)
+    def _orm_to_dto(self, orm_obj: CurrenciesORM) -> CurrencyResponseDTO:
+        """Приватный метод преобразования"""
+        return CurrencyResponseDTO(
+            id=orm_obj.ID,
+            code=orm_obj.Code,
+            name=orm_obj.FullName,
+            sign=orm_obj.Sign
+        )
 
-    async def get_currencies(self) -> list[CurrencyResponseDTO] | AppBaseException:
+    async def get_currencies(self) -> list[CurrencyResponseDTO]:
         """Получить все валюты из БД."""
         stmt = select(CurrenciesORM)
         logger.debug("Построение запроса query: %s", stmt)
@@ -64,16 +58,15 @@ class CurrencyRepository:
         currencies_orm = result.scalars().all()
         logger.debug(f"Получение списка скаляров currencies_orm: {currencies_orm}")
 
-        currency_list = []
-        logger.debug("Создаем DTO объекты из ORM моделей")
+        currency_list = [CurrencyResponseDTO.model_validate(c) for c in currencies_orm]
+        logger.debug("Создаем DTO объекты из ORM моделей, currency_list length: %s",
+                     len(currency_list))
 
-        for currency_orm in currencies_orm:
-            currency_list.append(CurrencyResponseDTO.model_validate(currency_orm))
         return currency_list
 
     async def create_currency(
-        self, currency_data: CurrencyCreateDTO
-    ) -> CurrencyResponseDTO | AppBaseException:
+            self, currency_data: CurrencyCreateDTO
+    ) -> CurrencyResponseDTO:
         """Добавить валюту в БД"""
         new_currency = CurrenciesORM(
             Code=currency_data.code,
@@ -88,7 +81,7 @@ class CurrencyRepository:
         try:
             await self.session.commit()
             logger.debug("Выполнение INSERT в БД")
-            await self.session.refresh(new_currency)  # Обновляем объект добавляем ID
+            await self.session.refresh(new_currency)
         except IntegrityError as e:
             await self.session.rollback()
             logger.error("Currency exists: %s", e)

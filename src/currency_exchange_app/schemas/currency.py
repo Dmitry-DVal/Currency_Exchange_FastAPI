@@ -10,7 +10,6 @@ class CurrencyCodeDTO(BaseModel):
         max_length=3,
         pattern=r"^[A-Za-z]+$",
         examples=["USD"],
-        alias="Code",
     )
 
     @field_validator("code")
@@ -26,14 +25,13 @@ class CurrencyCreateDTO(CurrencyCodeDTO):
         max_length=50,
         examples=["United States dollar"],
         description="Полное название валюты",
-        alias="FullName",
     )
-    sign: str = Field(min_length=1, max_length=3, examples=["$"], alias="Sign")
+    sign: str = Field(min_length=1, max_length=3, examples=["$"])  # , alias="Sign")
 
 
 class CurrencyResponseDTO(CurrencyCreateDTO):
     """Полные данные валюты (ответ API)"""
 
-    id: int = Field(alias="ID")
+    id: int
 
     model_config = ConfigDict(from_attributes=True)
