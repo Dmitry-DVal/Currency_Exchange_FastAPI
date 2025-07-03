@@ -3,6 +3,7 @@ from fastapi import Depends
 from fastapi import Path
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from src.currency_exchange_app.db import get_db
 from src.currency_exchange_app.exceptions import CurrencyCodeError
 from src.currency_exchange_app.schemas.currency import CurrencyCodeDTO
