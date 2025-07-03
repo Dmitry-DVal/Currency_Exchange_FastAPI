@@ -7,14 +7,14 @@ from src.currency_exchange_app.db.base import Base
 
 class ExchangeRatesORM(Base):
     __tablename__ = "ExchangeRates"
-    ID: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    BaseCurrencyId: Mapped[int] = mapped_column(
-        ForeignKey("Currencies.ID"), nullable=False
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    baseCurrencyId: Mapped[int] = mapped_column(
+        ForeignKey("Currencies.id"), nullable=False
     )
-    TargetCurrencyId: Mapped[int] = mapped_column(
-        ForeignKey("Currencies.ID"), nullable=False
+    targetCurrencyId: Mapped[int] = mapped_column(
+        ForeignKey("Currencies.id"), nullable=False
     )
-    Rate: Mapped[float] = mapped_column(DECIMAL(6), nullable=False)
+    rate: Mapped[float] = mapped_column(DECIMAL(6), nullable=False)
 
-    BaseCurrency = relationship("CurrenciesORM", foreign_keys=[BaseCurrencyId])
-    TargetCurrency = relationship("CurrenciesORM", foreign_keys=[TargetCurrencyId])
+    baseCurrency = relationship("CurrenciesORM", foreign_keys=[baseCurrencyId])
+    targetCurrency = relationship("CurrenciesORM", foreign_keys=[targetCurrencyId])
