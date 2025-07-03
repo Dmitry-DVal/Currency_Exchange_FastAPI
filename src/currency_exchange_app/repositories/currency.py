@@ -3,7 +3,6 @@ import logging
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-
 from src.currency_exchange_app.models import CurrenciesORM
 from src.currency_exchange_app.schemas import CurrencyResponseDTO, CurrencyCreateDTO
 
@@ -14,7 +13,7 @@ class CurrencyRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def db_get_currency_by_code(self, code: str) -> CurrencyResponseDTO | None:
+    async def get_by_code(self, code: str) -> CurrencyResponseDTO | None:
         """Ищем валюту по коду. Возвращаем DTO или None (не найдено)."""
         stmt = select(CurrenciesORM).where(CurrenciesORM.Code == code)
         logger.debug("SQL запрос get_currency_by_code: %s", stmt)
@@ -27,19 +26,7 @@ class CurrencyRepository:
             return self._orm_to_dto(currency_orm)
         return None
 
-    def _orm_to_dto(self, orm_obj: CurrenciesORM) -> CurrencyResponseDTO:
-        """Приватный метод преобразования ORM в DTO"""
-        return CurrencyResponseDTO(
-            id=orm_obj.ID, code=orm_obj.Code, name=orm_obj.FullName, sign=orm_obj.Sign
-        )
-
-    def _dto_to_orm(self, dto_obj: CurrencyCreateDTO) -> CurrenciesORM:
-        """Приватный метод преобразования DTO в ORM"""
-        return CurrenciesORM(
-            Code=dto_obj.code, FullName=dto_obj.name, Sign=dto_obj.sign
-        )
-
-    async def db_get_currencies(self) -> list[CurrencyResponseDTO]:
+    async def get_all(self) -> list[CurrencyResponseDTO]:
         """Получить все валюты из БД."""
         stmt = select(CurrenciesORM)
         logger.debug("Построение запроса query: %s", stmt)
@@ -61,9 +48,7 @@ class CurrencyRepository:
 
         return currency_list
 
-    async def db_create_currency(
-        self, currency_data: CurrencyCreateDTO
-    ) -> CurrencyResponseDTO:
+    async def create(self, currency_data: CurrencyCreateDTO) -> CurrencyResponseDTO:
         """Добавить валюту в БД"""
         new_currency = self._dto_to_orm(currency_data)
         logger.debug("Создан ORM объект new_currency: %s", new_currency)
@@ -76,3 +61,15 @@ class CurrencyRepository:
         await self.session.refresh(new_currency)
 
         return self._orm_to_dto(new_currency)
+
+    def _orm_to_dto(self, orm_obj: CurrenciesORM) -> CurrencyResponseDTO:
+        """Приватный метод преобразования ORM в DTO"""
+        return CurrencyResponseDTO(
+            id=orm_obj.ID, code=orm_obj.Code, name=orm_obj.FullName, sign=orm_obj.Sign
+        )
+
+    def _dto_to_orm(self, dto_obj: CurrencyCreateDTO) -> CurrenciesORM:
+        """Приватный метод преобразования DTO в ORM"""
+        return CurrenciesORM(
+            Code=dto_obj.code, FullName=dto_obj.name, Sign=dto_obj.sign
+        )
