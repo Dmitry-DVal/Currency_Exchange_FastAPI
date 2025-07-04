@@ -50,9 +50,7 @@ class CurrencyRepository:
 
     async def create(self, currency_data: CurrencyCreateDTO) -> CurrencyResponseDTO:
         """Добавить валюту в БД"""
-
         new_currency = CurrenciesORM(**currency_data.model_dump())
-
         logger.debug("Создан ORM объект new_currency: %s", new_currency)
 
         self.session.add(new_currency)
