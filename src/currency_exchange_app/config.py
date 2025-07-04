@@ -20,4 +20,4 @@ class Settings(BaseSettings):
         return dsn
 
 
-settings = Settings()
+settings = Settings() # type:ignore

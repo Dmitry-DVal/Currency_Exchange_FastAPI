@@ -1,5 +1,4 @@
 # tests/conftest.py
-# import pytest
 import pytest_asyncio
 from httpx import AsyncClient, ASGITransport
 from sqlalchemy import delete
@@ -24,7 +23,6 @@ test_async_engine = create_async_engine(
 )
 # Тестовый сессия
 test_async_session_factory = async_sessionmaker(test_async_engine)
-
 
 # Переопределяем get_db, чтобы использовать тестовую сессию
 async def override_get_db():
@@ -72,3 +70,12 @@ async def _clean_db():
         await session.execute(delete(CurrenciesORM))
         await session.commit()
         break
+
+
+
+# Дополнения для проверки сервисного слоя
+@pytest_asyncio.fixture
+async def async_session():
+    """Фикстура для тестовой сессии"""
+    async with test_async_session_factory() as session:
+        yield session
