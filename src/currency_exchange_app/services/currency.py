@@ -34,7 +34,7 @@ class CurrencyService:
 
     @db_exception_handler
     async def create_currency(
-            self, currency_data: CurrencyCreateDTO
+        self, currency_data: CurrencyCreateDTO
     ) -> CurrencyResponseDTO:
         try:
             return await self.repo.create(currency_data)

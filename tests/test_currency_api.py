@@ -1,79 +1,98 @@
+# tests/test_currency_api.py
 import pytest
-from httpx import AsyncClient, ASGITransport
-from pytest_asyncio import fixture as async_fixture
 
-from src.currency_exchange_app.main import app
-
-
-@async_fixture
-async def async_client():
-    async with AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://test"
-    ) as client:
-        yield client
+# Тестовые данные
+USD_CASE = {"code": "USD", "name": "United States dollar", "sign": "$"}
+USD_RESPONSE_CASE = {
+    "id": 1,
+    "code": "USD",
+    "name": "United States dollar",
+    "sign": "$",
+}
+RUB_CASE = {"code": "RUB", "name": "Russian Ruble", "sign": "R"}
+RUB_NO_FIELD_CASE = {"code": "RUB", "name": "Russian Ruble"}
+RUB_EXTRA_FIELD_CASE = {
+    "code": "RUB",
+    "name": "Russian Ruble",
+    "sign": "R",
+    "nickname": "chervonet",
+}
+RUB_RESPONSE_CASE = {"id": 2, "code": "RUB", "name": "Russian Ruble", "sign": "R"}
+RUN_ERROR_FIELD_RESPONSE_CASE = {
+    "detail": [
+        {
+            "type": "missing",
+            "loc": ["body", "sign"],
+            "msg": "Field required",
+            "input": {"code": "RUB", "name": "Russian Ruble"},
+        }
+    ]
+}
 
 
 @pytest.mark.asyncio
-async def test_get_currency_valid(async_client):
-    response = await async_client.get("/currency/USD")
+@pytest.mark.parametrize(
+    "currency_code, status_code, response_data",
+    [
+        pytest.param(
+            "USD",
+            200,
+            USD_RESPONSE_CASE,
+        ),
+        pytest.param("uSd", 200, USD_RESPONSE_CASE),
+        pytest.param("EUR", 404, {"detail": "Валюта с кодом 'EUR' отсутствует."}),
+        pytest.param("usdEur", 400, {"detail": "Код валюты usdEur не корректен."}),
+    ],
+)
+async def test_get_currency_by_code(
+    async_client, _seed_db, currency_code, status_code, response_data
+):
+    """Проверяем получение валюты по коду"""
+    response = await async_client.get(f"/currency/{currency_code}")
+
+    assert response.status_code == status_code
+    assert response.json() == response_data
+
+
+@pytest.mark.asyncio
+async def test_get_currencies(async_client, _clean_db, _seed_db):
+    """Проверяем получение списка валют"""
+    response = await async_client.get("/currencies")
+
     assert response.status_code == 200
-    assert response.json() == {
-        "code": "USD",
-        "name": "United States dollar",
-        "id": 1,
-        "sign": "$",
-    }
+    assert response.json() == [USD_RESPONSE_CASE]
 
 
 @pytest.mark.asyncio
-async def test_get_currency_not_found(async_client):
-    response = await async_client.get("/currency/ZZZ")
-    assert response.status_code == 404
-    assert response.json() == {"detail": "Currency not found"}
-    response = await async_client.get("/currency")
-    assert response.status_code == 404
-
-
-@pytest.mark.asyncio
-async def test_get_currencies(async_client):
+async def test_get_currencies_empty(async_client, _clean_db):
     response = await async_client.get("/currencies")
     assert response.status_code == 200
-    data = response.json()
-    assert len(data) == 2
+    assert response.json() == []
 
 
 @pytest.mark.asyncio
-async def test_post_currencies_sucsses(async_client):
-    response = await async_client.post(
-        "/currencies", json={"code": "RUB", "name": "Russian Rubl", "sign": "R"}
-    )
-    assert response.status_code == 201
-    assert response.json() == {
-        "code": "RUB",
-        "name": "Russian Rubl",
-        "sign": "R",
-        "id": 3,
-    }
+async def test_get_several_currencies(async_client, _clean_db, _seed_db):
+    await async_client.post("/currencies", json=RUB_CASE)
+    response = await async_client.get("/currencies")
+    assert response.status_code == 200
+    assert response.json() == [USD_RESPONSE_CASE, RUB_RESPONSE_CASE]
 
 
 @pytest.mark.asyncio
-async def test_post_currency_conflict(async_client):
-    # Код 'USD' уже есть
-    response = await async_client.post(
-        "/currencies", json={"name": "United States dollar", "code": "USD", "sign": "$"}
-    )
-    assert response.status_code == 409
-    assert response.json() == {"detail": "Currency already exists"}
+@pytest.mark.parametrize(
+    "currency_data, status_code, response_data",
+    [
+        pytest.param(RUB_CASE, 201, RUB_RESPONSE_CASE),
+        pytest.param(RUB_EXTRA_FIELD_CASE, 201, RUB_RESPONSE_CASE),
+        pytest.param(USD_CASE, 409, {"detail": "Currency already exists"}),
+        pytest.param(RUB_NO_FIELD_CASE, 422, RUN_ERROR_FIELD_RESPONSE_CASE),
+    ],
+)
+async def test_post_currency(
+    async_client, _seed_db, currency_data, status_code, response_data
+):
+    """Проверяем добавление валюты."""
+    response = await async_client.post("/currencies", json=currency_data)
 
-
-@pytest.mark.asyncio
-async def test_post_currency_missing_field(async_client):
-    response = await async_client.post(
-        "/currencies",
-        json={
-            "code": "GBP",
-            # нет name
-            "sign": "£",
-        },
-    )
-    assert response.status_code == 422
+    assert response.status_code == status_code
+    assert response.json() == response_data
