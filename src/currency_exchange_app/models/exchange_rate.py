@@ -1,7 +1,6 @@
 from sqlalchemy import DECIMAL, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-# from ..db.base import Base
 from src.currency_exchange_app.db.base import Base
 
 

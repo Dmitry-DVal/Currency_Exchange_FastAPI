@@ -1,9 +1,13 @@
 # tests/test_currency_service.py
 import pytest
 import pytest_asyncio
+
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.currency_exchange_app.exceptions import CurrencyNotFoundException, \
+
+from src.currency_exchange_app.exceptions import (
+    CurrencyNotFoundException,
     CurrencyAlreadyExistsException
+)
 from src.currency_exchange_app.models import CurrenciesORM
 from src.currency_exchange_app.schemas import CurrencyCreateDTO
 from src.currency_exchange_app.services.currency import CurrencyService

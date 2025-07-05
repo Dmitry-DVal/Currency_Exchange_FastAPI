@@ -1,7 +1,6 @@
 # src/currency_exchange_app/db/dependencies.py
 from typing import AsyncGenerator
 
-# from sqlalchemy.ext.asyncio import AsyncSession
 from .engine import async_session_factory
 
 

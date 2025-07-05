@@ -3,6 +3,7 @@ import logging
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from src.currency_exchange_app.models import CurrenciesORM
 from src.currency_exchange_app.schemas import CurrencyResponseDTO, CurrencyCreateDTO
 

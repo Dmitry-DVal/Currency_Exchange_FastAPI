@@ -1,7 +1,8 @@
 # tests/test_currency_repository.py
-
 import pytest
+
 from sqlalchemy.exc import IntegrityError
+
 from src.currency_exchange_app.models import CurrenciesORM
 from src.currency_exchange_app.repositories import CurrencyRepository
 from src.currency_exchange_app.schemas import CurrencyCreateDTO

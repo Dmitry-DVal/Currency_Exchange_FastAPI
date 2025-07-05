@@ -1,7 +1,9 @@
 # tests/test_currency_api.py
 import pytest
-from .control_cases import USD_CASE, USD_RESPONSE_CASE, RUB_CASE, RUB_NO_FIELD_CASE, \
-    RUB_EXTRA_FIELD_CASE, RUB_RESPONSE_CASE, RUN_ERROR_FIELD_RESPONSE_CASE
+from .control_cases import (USD_CASE, USD_RESPONSE_CASE, RUB_CASE,
+                            RUB_NO_FIELD_CASE,  RUB_EXTRA_FIELD_CASE,
+                            RUB_RESPONSE_CASE, RUN_ERROR_FIELD_RESPONSE_CASE
+                            )
 
 
 @pytest.mark.asyncio

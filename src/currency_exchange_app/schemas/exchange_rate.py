@@ -16,7 +16,7 @@ class InExchangeRatePairDTO(BaseModel):# 1
         min_length=3,
         max_length=3,
         pattern=r"^[A-Za-z]+$",
-        examples=["USD"],
+        examples=["RUB"],
     )
 
     @field_validator("base_currency")

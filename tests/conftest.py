@@ -1,9 +1,11 @@
 # tests/conftest.py
 import pytest_asyncio
+
 from httpx import AsyncClient, ASGITransport
 from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.pool import StaticPool
+
 from src.currency_exchange_app.db import get_db
 from src.currency_exchange_app.db.base import Base
 from src.currency_exchange_app.main import app
@@ -23,6 +25,7 @@ test_async_engine = create_async_engine(
 )
 # Тестовый сессия
 test_async_session_factory = async_sessionmaker(test_async_engine)
+
 
 # Переопределяем get_db, чтобы использовать тестовую сессию
 async def override_get_db():
@@ -45,7 +48,7 @@ async def setup_test_db():
 async def async_client():
     app.dependency_overrides[get_db] = override_get_db  # noqa
     async with AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://test"
+            transport=ASGITransport(app=app), base_url="http://test"
     ) as ac:
         yield ac
 
@@ -70,7 +73,6 @@ async def _clean_db():
         await session.execute(delete(CurrenciesORM))
         await session.commit()
         break
-
 
 
 # Дополнения для проверки сервисного слоя
