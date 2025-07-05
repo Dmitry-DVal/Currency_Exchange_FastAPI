@@ -13,7 +13,7 @@ class ExchangeRatesORM(Base):
     targetCurrencyId: Mapped[int] = mapped_column(
         ForeignKey("Currencies.id"), nullable=False
     )
-    rate: Mapped[float] = mapped_column(DECIMAL(6), nullable=False)
+    rate: Mapped[float] = mapped_column(DECIMAL(9, 6), nullable=False)
 
     baseCurrency = relationship("CurrenciesORM", foreign_keys=[baseCurrencyId])
     targetCurrency = relationship("CurrenciesORM", foreign_keys=[targetCurrencyId])

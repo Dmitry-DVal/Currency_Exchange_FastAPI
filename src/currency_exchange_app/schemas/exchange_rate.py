@@ -39,8 +39,8 @@ class ExchangeRateUpdateDTO(BaseModel):#3
 class ExchangeRateDTO(BaseModel):#4
     """Ответ API для обменного курса"""
     id: int
-    base_currency: CurrencyResponseDTO
-    target_currency: CurrencyResponseDTO
+    base_currency: CurrencyResponseDTO = Field(alias="baseCurrency")
+    target_currency: CurrencyResponseDTO = Field(alias="targetCurrency")
     rate: Decimal
 
     model_config = ConfigDict(from_attributes=True)
