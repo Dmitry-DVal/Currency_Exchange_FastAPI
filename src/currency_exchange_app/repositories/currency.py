@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.currency_exchange_app.models import CurrenciesORM
-from src.currency_exchange_app.schemas import CurrencyResponseDTO, CurrencyCreateDTO
+from src.currency_exchange_app.schemas import CurrencyResponseDTO, CurrencyCreateDTO, CurrencyCodeDTO
 
 logger = logging.getLogger("currency_exchange_app")
 
@@ -14,9 +14,9 @@ class CurrencyRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_by_code(self, code: str) -> CurrencyResponseDTO | None:
+    async def get_by_code(self, code_dto: CurrencyCodeDTO) -> CurrencyResponseDTO | None:
         """Ищем валюту по коду. Возвращаем DTO или None (не найдено)."""
-        stmt = select(CurrenciesORM).where(CurrenciesORM.code == code)
+        stmt = select(CurrenciesORM).where(CurrenciesORM.code == code_dto.code)
         logger.debug("SQL запрос get_by_code: %s", stmt)
 
         result = await self.session.execute(stmt)

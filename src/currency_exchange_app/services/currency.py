@@ -8,7 +8,7 @@ from src.currency_exchange_app.exceptions import (
     CurrencyAlreadyExistsException,
 )
 from src.currency_exchange_app.repositories import CurrencyRepository
-from src.currency_exchange_app.schemas import CurrencyResponseDTO, CurrencyCreateDTO
+from src.currency_exchange_app.schemas import CurrencyResponseDTO, CurrencyCreateDTO, CurrencyCodeDTO
 from src.currency_exchange_app.utils.decorators import db_exception_handler
 
 logger = logging.getLogger("currency_exchange_app")
@@ -19,12 +19,12 @@ class CurrencyService:
         self.repo = CurrencyRepository(session)
 
     @db_exception_handler
-    async def get_currency_by_code(self, code: str) -> CurrencyResponseDTO:
-        currency = await self.repo.get_by_code(code)
+    async def get_currency_by_code(self, code_dto: CurrencyCodeDTO) -> CurrencyResponseDTO:
+        currency = await self.repo.get_by_code(code_dto)
 
         if not currency:
-            logger.debug("Валюты %s отсутствует в БД", code)
-            raise CurrencyNotFoundException(f"Валюта с кодом '{code}' отсутствует.")
+            logger.debug("Валюты %s отсутствует в БД", code_dto)
+            raise CurrencyNotFoundException(f"Валюта с кодом '{code_dto}' отсутствует.")
 
         return currency
 

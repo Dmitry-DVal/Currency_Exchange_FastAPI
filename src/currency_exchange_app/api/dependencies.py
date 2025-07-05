@@ -15,7 +15,7 @@ from src.currency_exchange_app.services.currency import CurrencyService
 
 def validate_currency_code(code: str = Path(...)) -> str:
     try:
-        return CurrencyCodeDTO(code=code).code
+        return CurrencyCodeDTO(code=code)
     except ValidationError:
         raise CurrencyCodeError(f"Код валюты {code} не корректен.")
 
