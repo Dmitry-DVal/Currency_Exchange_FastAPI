@@ -3,10 +3,10 @@ from fastapi import HTTPException, status
 
 
 class AppBaseException(HTTPException):
-    """Базовое исключение для валюты"""
+    """Базовое исключение приложения"""
 
 
-class CurrencyBaseException(HTTPException):
+class CurrencyBaseException(AppBaseException):
     """Базовое исключение для валюты"""
 
 
@@ -54,3 +54,18 @@ class CurrencyAlreadyExistsException(CurrencyBaseException):
 
     def __init__(self, detail: str = "Currency already exists"):
         super().__init__(status_code=status.HTTP_409_CONFLICT, detail=detail)
+
+
+class ExchangeRateBaseException(AppBaseException):
+    """Базовое исключение для обменных курсов."""
+
+
+class ExchangeRatePairCodeError(ExchangeRateBaseException):
+    """
+        400: Код валюты не корректен
+        Пример:
+            {"detail":"Код валютной пары U3DIU7 не корректен."}
+    """
+
+    def __init__(self, detail: str = "Bad request"):
+        super().__init__(status_code=status.HTTP_400_BAD_REQUEST, detail=detail)
