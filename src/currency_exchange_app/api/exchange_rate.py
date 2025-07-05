@@ -1,3 +1,4 @@
+# src/currency_exchange_app/api/exchange_rate.py
 import logging
 
 from src.currency_exchange_app.services.exchange_rate import ExchangeRateService
@@ -10,6 +11,16 @@ router = APIRouter(tags=["Обменные курсы"])
 
 logger = logging.getLogger("currency_exchange_app")
 
+@router.get("/exchangeRate/{code_pair}", response_model=ExchangeRateDTO)
+async def get_exchange_rate(
+        code_pair: InExchangeRatePairDTO = Depends(validate_currencies_pair_code),
+    service: ExchangeRateService = Depends(get_ex_rate_service)
+) -> ExchangeRateDTO:
+    print(code_pair)
+    logger.debug("Запрос обменного курса валютной пары %s", code_pair)
+    return await service.get_exchange_rate_by_code(code_pair)
+
+
 
 @router.get("/exchangeRates", response_model=list[ExchangeRateDTO])
 async def get_all_exchange_rates(
@@ -18,15 +29,10 @@ async def get_all_exchange_rates(
     logger.debug("Запрос списка всех обменных курсов")
     return await service.get_exchange_rates()
 
-#
-#
-# @router.get("/exchangeRate/{code_pair}", response_model=ExchangeRateDTO)
-# async def get_exchange_rate(
-#         code_pair: InExchangeRatePairDTO = Depends(validate_currencies_pair_code)
-# ) -> ExchangeRateDTO:
-#     logger.debug("Запрос обменного курса валютной пары %s", code_pair)
-#     pass
-#
+
+
+
+
 #
 # @router.post("/exchangeRates", response_model=ExchangeRateDTO)
 # async def create_exchange_rates(

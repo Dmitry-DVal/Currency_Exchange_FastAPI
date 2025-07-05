@@ -17,7 +17,7 @@ class CurrencyRepository:
     async def get_by_code(self, code: str) -> CurrencyResponseDTO | None:
         """Ищем валюту по коду. Возвращаем DTO или None (не найдено)."""
         stmt = select(CurrenciesORM).where(CurrenciesORM.code == code)
-        logger.debug("SQL запрос get_currency_by_code: %s", stmt)
+        logger.debug("SQL запрос get_by_code: %s", stmt)
 
         result = await self.session.execute(stmt)
         currency_orm = result.scalar_one_or_none()

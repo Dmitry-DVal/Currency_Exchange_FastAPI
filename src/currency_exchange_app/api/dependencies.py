@@ -27,9 +27,11 @@ def validate_currencies_pair_code(code_pair: str = Path(...)) -> InExchangeRateP
     except ValidationError:
         raise ExchangeRatePairCodeError(f"Код валютной пары {code_pair} не корректен.")
 
-
 def get_currency_service(session: AsyncSession = Depends(get_db)) -> CurrencyService:
     return CurrencyService(session)
 
 def get_ex_rate_service(session: AsyncSession = Depends(get_db)) -> ExchangeRateService:
     return ExchangeRateService(session)
+
+
+

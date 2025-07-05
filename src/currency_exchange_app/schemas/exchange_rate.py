@@ -19,13 +19,10 @@ class InExchangeRatePairDTO(BaseModel):# 1
         examples=["RUB"],
     )
 
-    @field_validator("base_currency")
-    def uppercase_code(cls, v):
+    @field_validator("base_currency", "target_currency")
+    def uppercase_codes(cls, v):
         return v.upper()
 
-    @field_validator("target_currency")
-    def uppercase_code(cls, v):
-        return v.upper()
 
 class ExchangeRateCreateDTO(InExchangeRatePairDTO):#2
     """Создание обменного курса"""

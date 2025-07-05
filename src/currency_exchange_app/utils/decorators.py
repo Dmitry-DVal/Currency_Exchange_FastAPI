@@ -6,6 +6,7 @@ from src.currency_exchange_app.exceptions import (
     DatabaseException,
     CurrencyAlreadyExistsException,
     CurrencyNotFoundException,
+    ExchangeRateNotFoundException
 )
 
 logger = logging.getLogger("currency_exchange_app")
@@ -15,7 +16,8 @@ def db_exception_handler(func):
     async def wrapper(*args, **kwargs):
         try:
             return await func(*args, **kwargs)
-        except (CurrencyAlreadyExistsException, CurrencyNotFoundException):
+        except (CurrencyAlreadyExistsException, CurrencyNotFoundException,
+                ExchangeRateNotFoundException):
             raise
         except SQLAlchemyError as e:
             logger.error("Ошибка SQLAlchemy: %s", e)
