@@ -25,3 +25,7 @@ class ExchangeRatesORM(Base):
 
     baseCurrency = relationship("CurrenciesORM", foreign_keys=[baseCurrencyId])
     targetCurrency = relationship("CurrenciesORM", foreign_keys=[targetCurrencyId])
+
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__}>"

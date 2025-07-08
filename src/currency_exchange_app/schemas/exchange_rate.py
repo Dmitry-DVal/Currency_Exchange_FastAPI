@@ -30,7 +30,10 @@ class ExchangeRateCreateDTO(InExchangeRatePairDTO):#2
 
 class ExchangeRateUpdateDTO(BaseModel):#3
     """Обновление курса"""
-    rate: Decimal = Field(gt=0, examples=[Decimal("0.99")])
+    rate: Decimal = Field(
+        gt=0, examples=[Decimal("0.99")],
+        description="Новое значение курса (должно быть больше 0)"
+    )
 
 
 class ExchangeRateDTO(BaseModel):#4
