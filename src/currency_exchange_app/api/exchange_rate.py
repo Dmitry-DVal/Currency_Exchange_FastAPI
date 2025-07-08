@@ -12,7 +12,7 @@ router = APIRouter(tags=["Обменные курсы"])
 logger = logging.getLogger("currency_exchange_app")
 
 
-@router.post("/exchangeRates", response_model=ExchangeRateDTO)
+@router.post("/exchangeRates", response_model=ExchangeRateDTO, status_code=201)
 async def create_exchange_rates(
         exchange_rate_data: ExchangeRateCreateDTO,
         service: ExchangeRateService = Depends(get_ex_rate_service)
@@ -38,7 +38,7 @@ async def get_all_exchange_rates(
         service: ExchangeRateService = Depends(get_ex_rate_service)
 ) -> list[ExchangeRateDTO]:
     logger.debug("Запрос списка всех обменных курсов")
-    return await service.get_exchange_rates()
+    return await service.list_exchange_rates()
 
 
 

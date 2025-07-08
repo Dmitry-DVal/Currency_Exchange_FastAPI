@@ -19,6 +19,7 @@ class ExchangeRateRepository:
 
     async def create(self, base_currency_id: int, target_currency_id: int,
                      rate: Decimal) -> ExchangeRateDTO:
+        """Создать обменны курс."""
         new_ex_rate = ExchangeRatesORM(baseCurrencyId=base_currency_id,
                                        targetCurrencyId=target_currency_id,
                                        rate=rate)
@@ -36,20 +37,21 @@ class ExchangeRateRepository:
 
         return ExchangeRateDTO.model_validate(full_obj)
 
-    async def get_by_currency_pair(self,
-                                   code_pair: InExchangeRatePairDTO) -> ExchangeRateDTO | None:
-        stmt = select(ExchangeRatesORM).where(
+    async def get_by_currency_pair(self, code_pair: InExchangeRatePairDTO
+                                   ) -> ExchangeRateDTO | None:
+        """Получить обменный курс по валютной паре."""
+        stmt = self.get_query_with_currencies().where(
             ExchangeRatesORM.baseCurrency.has(code=code_pair.base_currency),
             ExchangeRatesORM.targetCurrency.has(code=code_pair.target_currency)
-        ).options(
-            joinedload(ExchangeRatesORM.baseCurrency),
-            joinedload(ExchangeRatesORM.targetCurrency)
         )
 
         logger.debug("SQL запрос get_by_code: %s", stmt)
 
         result = await self.session.execute(stmt)
         ex_rate_orm = result.scalar_one_or_none()
+
+        if ex_rate_orm is None:
+            return None
 
         return ExchangeRateDTO.model_validate(ex_rate_orm)
 

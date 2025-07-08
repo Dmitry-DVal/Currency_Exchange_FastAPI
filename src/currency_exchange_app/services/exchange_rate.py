@@ -16,7 +16,7 @@ logger = logging.getLogger("currency_exchange_app")
 
 class ExchangeRateService:
     def __init__(self, session: AsyncSession):
-        self.repo = ExchangeRateRepository(session)
+        self.exchange_rate_repo = ExchangeRateRepository(session)
         self.currency_repo = CurrencyRepository(session)
 
     @db_exception_handler
@@ -29,16 +29,16 @@ class ExchangeRateService:
         )
         base_currency_id, target_currency_id = await self._get_currency_ids(code_pair)
 
-
         try:
-            return await self.repo.create(base_currency_id, target_currency_id, exchange_rate_data.rate)
+            return await self.exchange_rate_repo.create(base_currency_id, target_currency_id, exchange_rate_data.rate)
         except IntegrityError as e:
-            await self.repo.session.rollback()
+            await self.exchange_rate_repo.session.rollback()
             if "foreign key constraint" in str(e).lower():
                 raise CurrencyNotFoundException("Одна или обе валюты не найдены")
             logger.error("Exchange rate exists: %s", e)
             raise ExchangeRateAlreadyExistsException(
                 f"Exchange Rate {exchange_rate_data.base_currency}/{exchange_rate_data.target_currency} Already Exists")
+
 
     async def _get_currency_ids(
             self, code_pair: InExchangeRatePairDTO
@@ -58,15 +58,14 @@ class ExchangeRateService:
     @db_exception_handler
     async def get_exchange_rate_by_currency_pair(self,
                                         code_pair: InExchangeRatePairDTO) -> ExchangeRateDTO:
-        exchange_rate = await self.repo.get_by_currency_pair(code_pair)
+        exchange_rate = await self.exchange_rate_repo.get_by_currency_pair(code_pair)
 
         if not exchange_rate:
             logger.debug("Обменный курс для пары %s отсутствует в БД", code_pair)
             raise ExchangeRateNotFoundException(
                 f"Обменный курс '{code_pair}' отсутствует.")
-
         return exchange_rate
 
     @db_exception_handler
-    async def get_exchange_rates(self) -> list[ExchangeRateDTO]:
-        return await self.repo.get_all()
+    async def list_exchange_rates(self) -> list[ExchangeRateDTO]:
+        return await self.exchange_rate_repo.get_all()
