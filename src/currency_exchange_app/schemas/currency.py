@@ -32,6 +32,9 @@ class CurrencyCreateDTO(CurrencyCodeDTO):
 class CurrencyResponseDTO(CurrencyCreateDTO):
     """Полные данные валюты (ответ API)"""
 
-    id: int
+    id: int = Field(
+        examples=["1"],
+        description="Уникальный id Валюты",
+    )
 
     model_config = ConfigDict(from_attributes=True)

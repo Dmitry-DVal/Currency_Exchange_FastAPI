@@ -20,7 +20,7 @@ class CurrencyService:
 
     @db_exception_handler
     async def get_currency_by_code(self, code_dto: CurrencyCodeDTO) -> CurrencyResponseDTO:
-        currency = await self.repo.get_by_code(code_dto)
+        currency = await self.repo.get_by_code(code_dto.code)
 
         if not currency:
             logger.debug("Валюты %s отсутствует в БД", code_dto)

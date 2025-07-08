@@ -14,9 +14,9 @@ class CurrencyRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_by_code(self, code_dto: CurrencyCodeDTO) -> CurrencyResponseDTO | None:
+    async def get_by_code(self, code: str) -> CurrencyResponseDTO | None:
         """Ищем валюту по коду. Возвращаем DTO или None (не найдено)."""
-        stmt = select(CurrenciesORM).where(CurrenciesORM.code == code_dto.code)
+        stmt = select(CurrenciesORM).where(CurrenciesORM.code == code)
         logger.debug("SQL запрос get_by_code: %s", stmt)
 
         result = await self.session.execute(stmt)
@@ -26,6 +26,7 @@ class CurrencyRepository:
         if currency_orm:
             return CurrencyResponseDTO.model_validate(currency_orm)
         return None
+
 
     async def get_all(self) -> list[CurrencyResponseDTO]:
         """Получить все валюты из БД."""
@@ -62,3 +63,6 @@ class CurrencyRepository:
         await self.session.refresh(new_currency)
 
         return CurrencyResponseDTO.model_validate(new_currency)
+
+
+

@@ -38,7 +38,7 @@ class ExchangeRateDTO(BaseModel):#4
     id: int
     base_currency: CurrencyResponseDTO = Field(alias="baseCurrency")
     target_currency: CurrencyResponseDTO = Field(alias="targetCurrency")
-    rate: Decimal
+    rate: Decimal = Field(examples=["81.00"])
 
     model_config = ConfigDict(from_attributes=True)
 

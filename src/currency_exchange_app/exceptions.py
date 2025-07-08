@@ -80,3 +80,13 @@ class ExchangeRateNotFoundException(ExchangeRateBaseException):
 
     def __init__(self, detail: str = "Not found"):
         super().__init__(status_code=status.HTTP_404_NOT_FOUND, detail=detail)
+
+class ExchangeRateAlreadyExistsException(ExchangeRateBaseException):
+    """
+    409: Валютный курс уже существует
+    Пример:
+        {"detail": "Exchange Rate USDRUB Already Exists"}
+    """
+
+    def __init__(self, detail: str = "Exchange Rate Already Exists"):
+        super().__init__(status_code=status.HTTP_409_CONFLICT, detail=detail)
