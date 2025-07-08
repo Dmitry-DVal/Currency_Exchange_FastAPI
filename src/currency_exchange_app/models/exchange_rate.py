@@ -6,12 +6,12 @@ from src.currency_exchange_app.db.base import Base
 from decimal import Decimal
 
 
-
 class ExchangeRatesORM(Base):
     __tablename__ = "ExchangeRates"
     __table_args__ = (
-        UniqueConstraint("baseCurrencyId", "targetCurrencyId",
-                         name="uq_base_target_currency"),
+        UniqueConstraint(
+            "baseCurrencyId", "targetCurrencyId", name="uq_base_target_currency"
+        ),
     )
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
@@ -25,7 +25,6 @@ class ExchangeRatesORM(Base):
 
     baseCurrency = relationship("CurrenciesORM", foreign_keys=[baseCurrencyId])
     targetCurrency = relationship("CurrenciesORM", foreign_keys=[targetCurrencyId])
-
 
     def __repr__(self):
         return f"<{self.__class__.__name__}>"

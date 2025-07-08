@@ -48,7 +48,7 @@ async def setup_test_db():
 async def async_client():
     app.dependency_overrides[get_db] = override_get_db  # noqa
     async with AsyncClient(
-            transport=ASGITransport(app=app), base_url="http://test"
+        transport=ASGITransport(app=app), base_url="http://test"
     ) as ac:
         yield ac
 

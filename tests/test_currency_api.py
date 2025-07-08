@@ -1,9 +1,14 @@
 # tests/test_currency_api.py
 import pytest
-from .control_cases import (USD_CASE, USD_RESPONSE_CASE, RUB_CASE,
-                            RUB_NO_FIELD_CASE,  RUB_EXTRA_FIELD_CASE,
-                            RUB_RESPONSE_CASE, RUN_ERROR_FIELD_RESPONSE_CASE
-                            )
+from .control_cases import (
+    USD_CASE,
+    USD_RESPONSE_CASE,
+    RUB_CASE,
+    RUB_NO_FIELD_CASE,
+    RUB_EXTRA_FIELD_CASE,
+    RUB_RESPONSE_CASE,
+    RUN_ERROR_FIELD_RESPONSE_CASE,
+)
 
 
 @pytest.mark.asyncio
@@ -21,7 +26,7 @@ from .control_cases import (USD_CASE, USD_RESPONSE_CASE, RUB_CASE,
     ],
 )
 async def test_get_currency_by_code(
-        async_client, _seed_db, currency_code, status_code, response_data
+    async_client, _seed_db, currency_code, status_code, response_data
 ):
     """Проверяем получение валюты по коду"""
     response = await async_client.get(f"/currency/{currency_code}")
@@ -65,7 +70,7 @@ async def test_get_several_currencies(async_client, _clean_db, _seed_db):
     ],
 )
 async def test_post_currency(
-        async_client, _seed_db, currency_data, status_code, response_data
+    async_client, _seed_db, currency_data, status_code, response_data
 ):
     """Проверяем добавление валюты."""
     response = await async_client.post("/currencies", json=currency_data)

@@ -62,9 +62,9 @@ class ExchangeRateBaseException(AppBaseException):
 
 class ExchangeRatePairCodeError(ExchangeRateBaseException):
     """
-        400: Код валюты не корректен
-        Пример:
-            {"detail":"Код валютной пары U3DIU7 не корректен."}
+    400: Код валюты не корректен
+    Пример:
+        {"detail":"Код валютной пары U3DIU7 не корректен."}
     """
 
     def __init__(self, detail: str = "Bad request"):
@@ -73,13 +73,14 @@ class ExchangeRatePairCodeError(ExchangeRateBaseException):
 
 class ExchangeRateNotFoundException(ExchangeRateBaseException):
     """
-        404: Обменный курс не существует
-        Пример:
-            {"detail":"Обменный курс 'USDFRN' отсутствует."}
-        """
+    404: Обменный курс не существует
+    Пример:
+        {"detail":"Обменный курс 'USDFRN' отсутствует."}
+    """
 
     def __init__(self, detail: str = "Not found"):
         super().__init__(status_code=status.HTTP_404_NOT_FOUND, detail=detail)
+
 
 class ExchangeRateAlreadyExistsException(ExchangeRateBaseException):
     """

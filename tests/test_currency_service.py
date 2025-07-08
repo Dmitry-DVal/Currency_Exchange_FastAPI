@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.currency_exchange_app.exceptions import (
     CurrencyNotFoundException,
-    CurrencyAlreadyExistsException
+    CurrencyAlreadyExistsException,
 )
 from src.currency_exchange_app.models import CurrenciesORM
 from src.currency_exchange_app.schemas import CurrencyCreateDTO
