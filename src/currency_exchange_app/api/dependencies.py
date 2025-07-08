@@ -10,12 +10,11 @@ from src.currency_exchange_app.exceptions import (
     CurrencyCodeError,
     ExchangeRatePairCodeError,
 )
-from src.currency_exchange_app.schemas.currency import CurrencyCodeDTO
-from src.currency_exchange_app.schemas.exchange_rate import InExchangeRatePairDTO
-from src.currency_exchange_app.services.currency import CurrencyService
+from src.currency_exchange_app.schemas import CurrencyCodeDTO, InExchangeRatePairDTO
+from src.currency_exchange_app.services import CurrencyService
 
 
-def validate_currency_code(code: str = Path(...)) -> str:
+def validate_currency_code(code: str = Path(...)) -> CurrencyCodeDTO:
     try:
         return CurrencyCodeDTO(code=code)
     except ValidationError:

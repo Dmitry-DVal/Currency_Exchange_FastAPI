@@ -13,7 +13,7 @@ from src.currency_exchange_app.schemas.exchange_rate import (
     ExchangeRateUpdateDTO,
     InExchangeRatePairDTO,
 )
-from src.currency_exchange_app.services.exchange_rate import ExchangeRateService
+from src.currency_exchange_app.services import ExchangeRateService
 
 router = APIRouter(tags=["Обменные курсы"])
 

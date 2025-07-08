@@ -11,7 +11,7 @@ from src.currency_exchange_app.schemas import (
     CurrencyCreateDTO,
     CurrencyCodeDTO,
 )
-from src.currency_exchange_app.services.currency import CurrencyService
+from src.currency_exchange_app.services import CurrencyService
 
 router = APIRouter(tags=["Валюты"])
 
