@@ -9,7 +9,10 @@ from src.currency_exchange_app.exceptions import (
     ExchangeRateAlreadyExistsException,
     CurrencyNotFoundException,
 )
-from src.currency_exchange_app.repositories import CurrencyRepository, ExchangeRateRepository
+from src.currency_exchange_app.repositories import (
+    CurrencyRepository,
+    ExchangeRateRepository,
+)
 from src.currency_exchange_app.schemas.exchange_rate import (
     ExchangeRateDTO,
     InExchangeRatePairDTO,

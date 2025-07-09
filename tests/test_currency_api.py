@@ -21,7 +21,9 @@ from .control_cases import (
             USD_RESPONSE_CASE,
         ),
         pytest.param("uSd", 200, USD_RESPONSE_CASE),
-        pytest.param("EUR", 404, {"detail": "Валюта с кодом 'EUR' отсутствует."}),
+        pytest.param(
+            "EUR", 404, {"detail": "Валюта с кодом 'code='EUR'' отсутствует."}
+        ),
         pytest.param("usdEur", 400, {"detail": "Код валюты usdEur не корректен."}),
     ],
 )

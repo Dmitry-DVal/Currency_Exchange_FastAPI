@@ -1,6 +1,5 @@
 # tests/test_currency_repository.py
 import pytest
-
 from sqlalchemy.exc import IntegrityError
 
 from src.currency_exchange_app.models import CurrenciesORM
@@ -45,7 +44,7 @@ async def test_create_returns_currency(async_session, _clean_db):
     currency = CurrencyCreateDTO(**USD_CASE)
     repo = CurrencyRepository(async_session)
 
-    result = await repo.create(currency)
+    result = await repo.create(**currency.model_dump())
 
     assert result is not None
     assert result.code == "USD"
@@ -73,14 +72,14 @@ async def test_create_duplicate_raises_error(async_session, _clean_db, _seed_db)
     currency = CurrencyCreateDTO(**USD_CASE)
 
     with pytest.raises(IntegrityError):
-        await repo.create(currency)
+        await repo.create(**currency.model_dump())
 
 
 @pytest.mark.asyncio
 async def test_created_currency_persists(async_session, _clean_db):
     repo = CurrencyRepository(async_session)
     dto = CurrencyCreateDTO(**RUB_CASE)
-    created = await repo.create(dto)
+    created = await repo.create(**dto.model_dump())
 
     fetched = await repo.get_by_code("RUB")
     assert fetched == created  # по значению DTO (не по id)

@@ -4,6 +4,7 @@ import pytest_asyncio
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from currency_exchange_app.schemas import CurrencyCodeDTO
 from src.currency_exchange_app.exceptions import (
     CurrencyNotFoundException,
     CurrencyAlreadyExistsException,
@@ -22,16 +23,16 @@ class TestCurrencyAPI:
         self.session = async_session
 
     async def test_get_currency_by_code_success(self):
-        result = await self.service.get_currency_by_code("USD")
+        result = await self.service.get_currency_by_code(CurrencyCodeDTO(code="USD"))
         assert result.code == "USD"
         assert result.name == "United States dollar"
         assert result.sign == "$"
 
     async def test_get_currency_by_code_not_found(self):
         with pytest.raises(CurrencyNotFoundException) as exc_info:
-            await self.service.get_currency_by_code("EUR")
+            await self.service.get_currency_by_code(CurrencyCodeDTO(code="EUR"))
 
-        assert "Валюта с кодом 'EUR' отсутствует" in str(exc_info.value)
+        assert "Валюта с кодом 'code='EUR'' отсутствует" in str(exc_info.value)
 
     async def test_get_currencies(self):
         test_currency = CurrenciesORM(**RUB_CASE)
