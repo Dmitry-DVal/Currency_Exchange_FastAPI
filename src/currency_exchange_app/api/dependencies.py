@@ -1,7 +1,9 @@
 # src/currency_exchange_app/api/dependencies.py
-from src.currency_exchange_app.services.exchange_rate import ExchangeRateService
+import logging
+
+
 from fastapi import Depends
-from fastapi import Path
+from fastapi import Path, Query
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,12 +13,32 @@ from src.currency_exchange_app.exceptions import (
     ExchangeRatePairCodeError,
 )
 from src.currency_exchange_app.schemas import CurrencyCodeDTO, InExchangeRatePairDTO
-from src.currency_exchange_app.services import CurrencyService
+from src.currency_exchange_app.services import (
+    CurrencyService,
+    ExchangeRateService,
+    ExchangeService,
+)
+
+logger = logging.getLogger("currency_exchange_app")
 
 
 def validate_currency_code(code: str = Path(...)) -> CurrencyCodeDTO:
     try:
         return CurrencyCodeDTO(code=code)
+    except ValidationError:
+        raise CurrencyCodeError(f"Код валюты {code} не корректен.")
+
+
+def validate_from_currency(code: str = Query(..., alias="from")):
+    try:
+        return CurrencyCodeDTO(code=code).code
+    except ValidationError:
+        raise CurrencyCodeError(f"Код валюты {code} не корректен.")
+
+
+def validate_to_currency(code: str = Query(..., alias="to")):
+    try:
+        return CurrencyCodeDTO(code=code).code
     except ValidationError:
         raise CurrencyCodeError(f"Код валюты {code} не корректен.")
 
@@ -36,3 +58,7 @@ def get_currency_service(session: AsyncSession = Depends(get_db)) -> CurrencySer
 
 def get_ex_rate_service(session: AsyncSession = Depends(get_db)) -> ExchangeRateService:
     return ExchangeRateService(session)
+
+
+async def get_exchange_service(session: AsyncSession = Depends(get_db)):
+    return ExchangeService(session)

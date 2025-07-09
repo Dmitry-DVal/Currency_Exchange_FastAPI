@@ -85,3 +85,16 @@ class ExchangeRateRepository:
             joinedload(ExchangeRatesORM.baseCurrency),
             joinedload(ExchangeRatesORM.targetCurrency),
         )
+
+    # Обмен валют
+    async def get_rate_by_pair(
+        self, base_currency: str, target_currency: str
+    ) -> Decimal | None:
+        """Возвращает курс для пары валют или None если не найден"""
+        stmt = select(ExchangeRatesORM.rate).where(
+            ExchangeRatesORM.baseCurrency.has(code=base_currency),
+            ExchangeRatesORM.targetCurrency.has(code=target_currency),
+        )
+        logger.debug("Построение запроса query: %s", stmt)
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
