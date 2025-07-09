@@ -61,3 +61,39 @@ INVALID_NEGATIVE_RATE_RESPONSE = {
         }
     ]
 }
+
+# Для конвертации валют
+CONVERT_DIRECT_CASE = {
+    "params": {"from": "USD", "to": "RUB", "amount": 10},
+    "expected": {
+        "baseCurrency": {
+            "id": 1,
+            "code": "USD",
+            "name": "United States dollar",
+            "sign": "$",
+        },
+        "targetCurrency": {
+            "id": 2,
+            "code": "RUB",
+            "name": "Russian Ruble",
+            "sign": "₽",
+        },
+        "rate": 70.50,
+        "amount": 10,
+        "convertedAmount": 705.0,
+    },
+}
+
+CONVERT_REVERSE_CASE = {
+    "params": {"from": "RUB", "to": "USD", "amount": 70.5},
+    "expected_converted": 1.0,
+}
+
+CONVERT_CROSS_CASE = {
+    "params": {"from": "EUR", "to": "RUB", "amount": 2},
+    "setup": [
+        {"base": "USD", "target": "EUR", "rate": 0.5},
+        {"base": "USD", "target": "RUB", "rate": 70.0},
+    ],
+    "expected_converted": 280.0,
+}

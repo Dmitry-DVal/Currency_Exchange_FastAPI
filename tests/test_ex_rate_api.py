@@ -7,7 +7,6 @@ from .control_cases import (
     RUB_CASE,
     USD_RESPONSE_CASE,
     RUB_RESPONSE_CASE,
-    # Добавляем тестовые данные для курсов
     USD_RUB_RATE_CASE,
     USD_RUB_RATE_RESPONSE,
     EUR_USD_RATE_CASE,
@@ -81,7 +80,6 @@ async def test_create_exchange_rate(
 ):
     """Проверяем создание нового курса"""
     await async_client.post("/currencies", json=RUB_CASE)
-    # await async_client.post("/currencies", json=USD_CASE)
     response = await async_client.post("/exchangeRates", json=rate_data)
     assert response.status_code == status_code
     assert response.json() == response_data

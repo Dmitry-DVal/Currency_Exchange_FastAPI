@@ -44,7 +44,7 @@ class ExchangeService:
                 f"Не удалось найти курс для пары {from_currency}/{to_currency}"
             )
 
-        converted_amount = amount * rate
+        converted_amount = (amount * rate).quantize(Decimal("0.01"))
 
         return CurrencyConversionResultDTO(
             baseCurrency=base_currency,
