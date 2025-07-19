@@ -4,7 +4,7 @@ import pytest_asyncio
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from currency_exchange_app.schemas import CurrencyCodeDTO
+from src.currency_exchange_app.schemas import CurrencyCodeDTO
 from src.currency_exchange_app.exceptions import (
     CurrencyNotFoundException,
     CurrencyAlreadyExistsException,

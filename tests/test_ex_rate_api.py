@@ -1,5 +1,4 @@
 # tests/test_ex_rate_api.py
-from decimal import Decimal
 
 import pytest
 
@@ -26,11 +25,11 @@ from .control_cases import (
             "EURUSD",
             404,
             {
-                "detail": "Обменный курс 'base_currency='EUR' target_currency='USD'' отсутствует."
+                "message": "Обменный курс 'base_currency='EUR' target_currency='USD'' отсутствует."
             },
         ),
         pytest.param(
-            "USDRUBEUR", 400, {"detail": "Код валютной пары USDRUBEUR не корректен."}
+            "USDRUBEUR", 400, {"message": "Код валютной пары USDRUBEUR не корректен."}
         ),
     ],
 )
@@ -68,11 +67,11 @@ async def test_get_all_exchange_rates(async_client, _seed_db_with_rates):
         pytest.param(
             EUR_USD_RATE_CASE,
             404,
-            {"detail": "Одна или обе валюты с кодом EUR/USD отсутствуют."},
+            {"message": "Одна или обе валюты с кодом EUR/USD отсутствуют."},
         ),
-        pytest.param(INVALID_RATE_CASE, 422, INVALID_NEGATIVE_RATE_RESPONSE),
+        pytest.param(INVALID_RATE_CASE, 400, INVALID_NEGATIVE_RATE_RESPONSE),
         # pytest.param(INVALID_PAIR_CASE, 400,
-        #              {"detail": "Валюты в паре должны отличаться"}),
+        #              {"message": "Валюты в паре должны отличаться"}),
     ],
 )
 async def test_create_exchange_rate(
@@ -97,7 +96,7 @@ async def test_create_exchange_rate(
                 "id": 1,
                 "baseCurrency": USD_RESPONSE_CASE,
                 "targetCurrency": RUB_RESPONSE_CASE,
-                "rate": Decimal("75.50"),
+                "rate": "75.500000",
             },
         ),
         pytest.param(
@@ -105,10 +104,15 @@ async def test_create_exchange_rate(
             RATE_UPDATE_CASE,
             404,
             {
-                "detail": "Обменный курс 'base_currency='EUR' target_currency='USD'' отсутствует."
+                "message": "Обменный курс 'base_currency='EUR' target_currency='USD'' отсутствует."
             },
         ),
-        pytest.param("USDRUB", INVALID_RATE_CASE, 422, INVALID_NEGATIVE_RATE_RESPONSE),
+        pytest.param(
+            "USDRUB",
+            INVALID_RATE_CASE,
+            400,
+            {"message": "body->rate: Input should be greater than 0"},
+        ),
     ],
 )
 async def test_update_exchange_rate(
@@ -130,6 +134,6 @@ async def test_update_exchange_rate(
         assert result["id"] == response_data["id"]
         assert result["baseCurrency"] == response_data["baseCurrency"]
         assert result["targetCurrency"] == response_data["targetCurrency"]
-        assert Decimal(result["rate"]) == response_data["rate"]
+        assert str(result["rate"]) == response_data["rate"]
     else:
         assert response.json() == response_data

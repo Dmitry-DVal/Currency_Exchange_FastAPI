@@ -24,7 +24,7 @@ class CurrencyCodeError(CurrencyBaseException):
     """
     400: Код валюты не корректен
     Пример:
-        {"detail":"Код валюты -3245 не корректен."}
+        {"message":"Код валюты -3245 не корректен."}
     """
 
     def __init__(self, message: str = "Bad request"):
@@ -35,7 +35,7 @@ class CurrencyNotFoundException(CurrencyBaseException):
     """
     404: Валюта не существует
     Пример:
-        {"detail":"Код валюты USr отсутствует."}
+        {"message":"Код валюты USr отсутствует."}
     """
 
     def __init__(self, message: str = "Not found"):
@@ -46,7 +46,7 @@ class DatabaseException(AppBaseException):
     """
     500: Ошибка базы данных или соединения.
     Пример:
-        {"detail":"password authentication failed for user \"user_db"}
+        {"message":"password authentication failed for user \"user_db"}
     """
 
     def __init__(self, message: str = "Database error"):
@@ -59,7 +59,7 @@ class CurrencyAlreadyExistsException(CurrencyBaseException):
     """
     409: Валюта уже существует
     Пример:
-        {"detail": "Currency USD already exists"}
+        {"message": "Currency USD already exists"}
     """
 
     def __init__(self, message: str = "Currency already exists"):
@@ -74,7 +74,7 @@ class ExchangeRatePairCodeError(ExchangeRateBaseException):
     """
     400: Код валюты не корректен
     Пример:
-        {"detail":"Код валютной пары U3DIU7 не корректен."}
+        {"message":"Код валютной пары U3DIU7 не корректен."}
     """
 
     def __init__(self, message: str = "Bad request"):
@@ -85,7 +85,7 @@ class ExchangeRateNotFoundException(ExchangeRateBaseException):
     """
     404: Обменный курс не существует
     Пример:
-        {"detail":"Обменный курс 'USDFRN' отсутствует."}
+        {"message":"Обменный курс 'USDFRN' отсутствует."}
     """
 
     def __init__(self, message: str = "Not found"):
@@ -96,7 +96,7 @@ class ExchangeRateAlreadyExistsException(ExchangeRateBaseException):
     """
     409: Валютный курс уже существует
     Пример:
-        {"detail": "Exchange Rate USDRUB Already Exists"}
+        {"message": "Exchange Rate USDRUB Already Exists"}
     """
 
     def __init__(self, message: str = "Exchange Rate Already Exists"):

@@ -1,5 +1,6 @@
 # tests/test_currency_api.py
 import pytest
+
 from .control_cases import (
     USD_CASE,
     USD_RESPONSE_CASE,
@@ -22,9 +23,9 @@ from .control_cases import (
         ),
         pytest.param("uSd", 200, USD_RESPONSE_CASE),
         pytest.param(
-            "EUR", 404, {"detail": "Валюта с кодом 'code='EUR'' отсутствует."}
+            "EUR", 404, {"message": "Валюта с кодом 'code='EUR'' отсутствует."}
         ),
-        pytest.param("usdEur", 400, {"detail": "Код валюты usdEur не корректен."}),
+        pytest.param("usdEur", 400, {"message": "Код валюты usdEur не корректен."}),
     ],
 )
 async def test_get_currency_by_code(
@@ -67,8 +68,8 @@ async def test_get_several_currencies(async_client, _clean_db, _seed_db):
     [
         pytest.param(RUB_CASE, 201, RUB_RESPONSE_CASE),
         pytest.param(RUB_EXTRA_FIELD_CASE, 201, RUB_RESPONSE_CASE),
-        pytest.param(USD_CASE, 409, {"detail": "Currency already exists"}),
-        pytest.param(RUB_NO_FIELD_CASE, 422, RUN_ERROR_FIELD_RESPONSE_CASE),
+        pytest.param(USD_CASE, 409, {"message": "Currency already exists"}),
+        pytest.param(RUB_NO_FIELD_CASE, 400, RUN_ERROR_FIELD_RESPONSE_CASE),
     ],
 )
 async def test_post_currency(

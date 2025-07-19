@@ -1,5 +1,6 @@
-import pytest
 from decimal import Decimal
+
+import pytest
 
 from .control_cases import (
     CONVERT_DIRECT_CASE,
@@ -33,7 +34,7 @@ async def test_convert_reverse(async_client, _seed_db_with_rates):
     "params, status, message",
     [
         # ({"from": "USD", "to": "USD", "amount": 10}, 404, "Код валюты USD не корректен."), # Сейчас нет проверки что валюта одинаковая
-        ({"from": "USD", "to": "RUB", "amount": -10}, 422, None),
+        ({"from": "USD", "to": "RUB", "amount": -10}, 400, None),
         (
             {"from": "USD", "to": "ABC", "amount": 10},
             404,

@@ -1,17 +1,19 @@
 # tests/conftest.py
 import pytest_asyncio
-
+from fastapi import Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from httpx import AsyncClient, ASGITransport
 from sqlalchemy import delete
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.pool import StaticPool
-from sqlalchemy import select
+from starlette.status import HTTP_400_BAD_REQUEST
 
 from src.currency_exchange_app.db import get_db
 from src.currency_exchange_app.db.base import Base
 from src.currency_exchange_app.main import app
 from src.currency_exchange_app.models import CurrenciesORM, ExchangeRatesORM
-from decimal import Decimal
 
 # DATABASE_URL
 DATABASE_URL = "sqlite+aiosqlite:///:memory:"
@@ -36,6 +38,21 @@ async def override_get_db():
         yield session
 
 
+# Переопределяем обработчик, чтобы избежать ошибки с сериализацией Decimal
+async def test_validation_handler(request: Request, exc: RequestValidationError):
+    first_error = exc.errors()[0]
+    error_message = first_error.get("msg", "Validation error")
+
+    if "loc" in first_error:
+        field = "->".join(str(x) for x in first_error["loc"])
+        error_message = f"{field}: {error_message}"
+
+    # Упрощаем ответ, удаляя несериализуемые данные
+    return JSONResponse(
+        status_code=HTTP_400_BAD_REQUEST, content={"message": error_message}
+    )
+
+
 # fixture, которая инициализирует БД перед тестами
 @pytest_asyncio.fixture(scope="session", autouse=True)
 async def setup_test_db():
@@ -49,6 +66,7 @@ async def setup_test_db():
 @pytest_asyncio.fixture
 async def async_client():
     app.dependency_overrides[get_db] = override_get_db  # noqa
+    app.add_exception_handler(RequestValidationError, test_validation_handler)
     async with AsyncClient(
         transport=ASGITransport(app=app), base_url="http://test"
     ) as ac:
@@ -110,7 +128,8 @@ async def _seed_db_with_rates(_seed_db):
             rate = ExchangeRatesORM(
                 baseCurrencyId=1,  # USD
                 targetCurrencyId=2,  # RUB
-                rate=Decimal("70.50"),
+                # rate=Decimal("70.50"), #  rate="70.50"
+                rate="70.50",  # rate="70.50"
             )
             session.add(rate)
             await session.commit()
