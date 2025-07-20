@@ -56,7 +56,7 @@ async def test_get_currencies_empty(async_client, _clean_db):
 
 @pytest.mark.asyncio
 async def test_get_several_currencies(async_client, _clean_db, _seed_db):
-    await async_client.post("/currencies", json=RUB_CASE)
+    await async_client.post("/currencies", data=RUB_CASE)
     response = await async_client.get("/currencies")
     assert response.status_code == 200
     assert response.json() == [USD_RESPONSE_CASE, RUB_RESPONSE_CASE]
@@ -76,7 +76,7 @@ async def test_post_currency(
     async_client, _seed_db, currency_data, status_code, response_data
 ):
     """Проверяем добавление валюты."""
-    response = await async_client.post("/currencies", json=currency_data)
+    response = await async_client.post("/currencies", data=currency_data)
 
     assert response.status_code == status_code
     assert response.json() == response_data

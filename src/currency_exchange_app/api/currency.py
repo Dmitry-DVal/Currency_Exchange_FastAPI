@@ -1,7 +1,8 @@
 # src/currency_exchange_app/api/currency.py
 import logging
+from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Form
 from src.currency_exchange_app.api.dependencies import (
     get_currency_service,
     validate_currency_code,
@@ -37,7 +38,7 @@ async def get_currencies(
 
 @router.post("/currencies", response_model=CurrencyResponseDTO, status_code=201)
 async def create_currency(
-    currency_data: CurrencyCreateDTO,
+    currency_data: Annotated[CurrencyCreateDTO, Form()],
     service: CurrencyService = Depends(get_currency_service),
 ) -> CurrencyResponseDTO:
     logger.debug("Запрос добавления валюты: %s", currency_data)
