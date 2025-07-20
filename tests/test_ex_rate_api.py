@@ -78,8 +78,8 @@ async def test_create_exchange_rate(
     async_client, _clean_db, _seed_db, rate_data, status_code, response_data
 ):
     """Проверяем создание нового курса"""
-    await async_client.post("/currencies", json=RUB_CASE)
-    response = await async_client.post("/exchangeRates", json=rate_data)
+    await async_client.post("/currencies", data=RUB_CASE)
+    response = await async_client.post("/exchangeRates", data=rate_data)
     assert response.status_code == status_code
     assert response.json() == response_data
 
@@ -125,7 +125,7 @@ async def test_update_exchange_rate(
     response_data,
 ):
     """Проверяем обновление курса"""
-    response = await async_client.patch(f"/exchangeRate/{pair}", json=update_data)
+    response = await async_client.patch(f"/exchangeRate/{pair}", data=update_data)
     assert response.status_code == status_code
 
     # Для Decimal нужно специальное сравнение
