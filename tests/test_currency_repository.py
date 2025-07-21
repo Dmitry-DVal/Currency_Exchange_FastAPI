@@ -48,7 +48,7 @@ async def test_create_returns_currency(async_session, _clean_db):
 
     assert result is not None
     assert result.code == "USD"
-    assert result.name == "United States dollar"
+    assert result.name == "United States Dollar"
     assert result.sign == "$"
 
 

@@ -1,8 +1,27 @@
 # src/currency_exchange_app/schemas/exchange_rate.py
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
+from typing import Any
+
+from pydantic import BaseModel, Field, field_validator, ConfigDict, model_validator
+from pydantic_core import CoreSchema, core_schema
 
 from .currency import CurrencyResponseDTO
-from pydantic import BaseModel, Field, field_validator, ConfigDict
+
+
+class DecimalCommaDot(Decimal):
+    @classmethod
+    def __get_pydantic_core_schema__(cls, source_type: Any, handler: Any) -> CoreSchema:
+        return core_schema.no_info_after_validator_function(
+            cls.validate,
+            core_schema.str_schema(),
+        )
+
+    @classmethod
+    def validate(cls, v: str) -> Decimal:
+        try:
+            return Decimal(v.replace(",", "."))
+        except InvalidOperation:
+            raise ValueError("Некорректный формат числа")
 
 
 class InExchangeRatePairDTO(BaseModel):  # 1
@@ -29,17 +48,19 @@ class InExchangeRatePairDTO(BaseModel):  # 1
 class ExchangeRateCreateDTO(InExchangeRatePairDTO):  # 2
     """Создание обменного курса"""
 
-    rate: Decimal = Field(gt=0, examples=[Decimal("0.99")])
+    rate: DecimalCommaDot = Field(gt=0, examples=[Decimal("0.99")])
+
+    @model_validator(mode="after")
+    def check_different_currencies(self):
+        if self.base_currency == self.target_currency:
+            raise ValueError("Base and target currencies must be different.")
+        return self
 
 
 class ExchangeRateUpdateDTO(BaseModel):  # 3
     """Обновление курса"""
 
-    rate: Decimal = Field(
-        gt=0,
-        examples=[Decimal("0.99")],
-        description="Новое значение курса (должно быть больше 0)",
-    )
+    rate: DecimalCommaDot = Field(gt=0, examples=[Decimal("0.99")])
 
 
 class ExchangeRateDTO(BaseModel):  # 4

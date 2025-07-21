@@ -1,5 +1,6 @@
 # src/currency_exchange_app/schemas/currency.py
 from pydantic import BaseModel, Field, field_validator, ConfigDict
+import re
 
 
 class CurrencyCodeDTO(BaseModel):
@@ -25,8 +26,25 @@ class CurrencyCreateDTO(CurrencyCodeDTO):
         max_length=50,
         examples=["United States dollar"],
         description="Полное название валюты",
+        # pattern=r"^[A-Za-z]+$"
     )
     sign: str = Field(min_length=1, max_length=3, examples=["$"])  # , alias="Sign")
+
+    @field_validator("sign")
+    def normalize_sign(cls, v: str) -> str:
+        return v.strip()
+
+    @field_validator("name")
+    def normalize_name(cls, v: str) -> str:
+        v = v.strip()
+
+        if not re.fullmatch(r"^[A-Za-z\s]+$", v):
+            raise ValueError(
+                "Название должно содержать только латинские буквы и пробелы"
+            )
+        v = v.title()
+        v = " ".join(v.split())
+        return v
 
 
 class CurrencyResponseDTO(CurrencyCreateDTO):

@@ -12,6 +12,7 @@ from .control_cases import (
     RATE_UPDATE_CASE,
     INVALID_NEGATIVE_RATE_RESPONSE,
     INVALID_RATE_CASE,
+    INVALID_RATE_CASE_SAME_CURRENCY,
 )
 
 
@@ -70,8 +71,13 @@ async def test_get_all_exchange_rates(async_client, _seed_db_with_rates):
             {"message": "Одна или обе валюты с кодом EUR/USD отсутствуют."},
         ),
         pytest.param(INVALID_RATE_CASE, 400, INVALID_NEGATIVE_RATE_RESPONSE),
-        # pytest.param(INVALID_PAIR_CASE, 400,
-        #              {"message": "Валюты в паре должны отличаться"}),
+        pytest.param(
+            INVALID_RATE_CASE_SAME_CURRENCY,
+            400,
+            {
+                "message": "body: Value error, Base and target currencies must be different."
+            },
+        ),
     ],
 )
 async def test_create_exchange_rate(

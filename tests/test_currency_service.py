@@ -25,7 +25,7 @@ class TestCurrencyAPI:
     async def test_get_currency_by_code_success(self):
         result = await self.service.get_currency_by_code(CurrencyCodeDTO(code="USD"))
         assert result.code == "USD"
-        assert result.name == "United States dollar"
+        assert result.name == "United States Dollar"
         assert result.sign == "$"
 
     async def test_get_currency_by_code_not_found(self):
