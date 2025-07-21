@@ -1,6 +1,7 @@
 # src/currency_exchange_app/schemas/currency.py
-from pydantic import BaseModel, Field, field_validator, ConfigDict
 import re
+
+from pydantic import BaseModel, Field, field_validator, ConfigDict
 
 
 class CurrencyCodeDTO(BaseModel):
@@ -26,7 +27,6 @@ class CurrencyCreateDTO(CurrencyCodeDTO):
         max_length=50,
         examples=["United States dollar"],
         description="Полное название валюты",
-        # pattern=r"^[A-Za-z]+$"
     )
     sign: str = Field(min_length=1, max_length=3, examples=["$"])  # , alias="Sign")
 
@@ -39,9 +39,7 @@ class CurrencyCreateDTO(CurrencyCodeDTO):
         v = v.strip()
 
         if not re.fullmatch(r"^[A-Za-z\s]+$", v):
-            raise ValueError(
-                "The name should contain only Latin letters and spaces"
-            )
+            raise ValueError("The name should contain only Latin letters and spaces")
         v = v.title()
         v = " ".join(v.split())
         return v

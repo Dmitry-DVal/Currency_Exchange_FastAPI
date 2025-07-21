@@ -3,6 +3,7 @@ import logging
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Form
+
 from src.currency_exchange_app.api.dependencies import (
     get_currency_service,
     validate_currency_code,

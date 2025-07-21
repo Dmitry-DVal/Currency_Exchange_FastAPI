@@ -13,7 +13,7 @@ from src.currency_exchange_app.repositories import (
     CurrencyRepository,
     ExchangeRateRepository,
 )
-from src.currency_exchange_app.schemas.exchange_rate import (
+from src.currency_exchange_app.schemas import (
     ExchangeRateDTO,
     InExchangeRatePairDTO,
     ExchangeRateCreateDTO,
@@ -93,7 +93,9 @@ class ExchangeRateService:
         )
 
         if not ex_rate_orm:
-            logger.debug("Exchange rate for pair %s is missing in the database", code_pair)
+            logger.debug(
+                "Exchange rate for pair %s is missing in the database", code_pair
+            )
             raise ExchangeRateNotFoundException(
                 f"The exchange rate of ‘{code_pair}’ is not available."
             )

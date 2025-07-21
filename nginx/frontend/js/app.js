@@ -213,11 +213,23 @@ $(document).ready(function() {
             success: function(data) {
                 $("#convert-converted-amount").val(data.convertedAmount);
             },
+//            error: function(jqXHR, textStatus, errorThrown) {
+//                const error = JSON.parse(jqXHR.responseText);
+//                const toast = $('#api-error-toast');
+//
+//                $(toast).find('.toast-body').text(error.message);
+//                toast.toast("show");
+//            }
             error: function(jqXHR, textStatus, errorThrown) {
                 const error = JSON.parse(jqXHR.responseText);
                 const toast = $('#api-error-toast');
 
-                $(toast).find('.toast-body').text(error.message);
+                let errorText = error.message;
+                if (error.details && error.details.length > 0) {
+                    errorText += '\n' + error.details.join('\n');
+                }
+                $(toast).find('.toast-body').text(errorText);
+
                 toast.toast("show");
             }
         });

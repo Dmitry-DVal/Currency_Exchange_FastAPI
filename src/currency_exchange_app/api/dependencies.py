@@ -1,7 +1,6 @@
 # src/currency_exchange_app/api/dependencies.py
 import logging
 
-
 from fastapi import Depends
 from fastapi import Path, Query
 from pydantic import ValidationError
@@ -11,8 +10,13 @@ from src.currency_exchange_app.db import get_db
 from src.currency_exchange_app.exceptions import (
     CurrencyCodeError,
     ExchangeRatePairCodeError,
+    ExchangeAmountValidationError,
 )
-from src.currency_exchange_app.schemas import CurrencyCodeDTO, InExchangeRatePairDTO
+from src.currency_exchange_app.schemas import (
+    CurrencyCodeDTO,
+    InExchangeRatePairDTO,
+    DecimalCommaDot,
+)
 from src.currency_exchange_app.services import (
     CurrencyService,
     ExchangeRateService,
@@ -43,13 +47,22 @@ def validate_to_currency(code: str = Query(..., alias="to")):
         raise CurrencyCodeError(f"The currency code {code} is not correct.")
 
 
+def validate_amount(amount: str = Query(...)):
+    try:
+        return DecimalCommaDot().validate(amount)
+    except ValueError:
+        raise ExchangeAmountValidationError(f"The amount '{amount}' is not correct.")
+
+
 def validate_currencies_pair_code(code_pair: str = Path(...)) -> InExchangeRatePairDTO:
     try:
         return InExchangeRatePairDTO(
             base_currency=code_pair[:3], target_currency=code_pair[3:]
         )
     except ValidationError:
-        raise ExchangeRatePairCodeError(f"The currency pair code '{code_pair}' is not correct.")
+        raise ExchangeRatePairCodeError(
+            f"The currency pair code '{code_pair}' is not correct."
+        )
 
 
 def get_currency_service(session: AsyncSession = Depends(get_db)) -> CurrencyService:

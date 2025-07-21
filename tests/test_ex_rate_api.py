@@ -30,7 +30,9 @@ from .control_cases import (
             },
         ),
         pytest.param(
-            "USDRUBEUR", 400, {"message": "The currency pair code 'USDRUBEUR' is not correct."}
+            "USDRUBEUR",
+            400,
+            {"message": "The currency pair code 'USDRUBEUR' is not correct."},
         ),
     ],
 )

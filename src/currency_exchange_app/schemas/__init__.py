@@ -1,7 +1,12 @@
 from .currency import CurrencyCreateDTO, CurrencyResponseDTO, CurrencyCodeDTO
-from .exchange_rate import InExchangeRatePairDTO
 from .exchange import CurrencyConversionResultDTO
-
+from .exchange_rate import (
+    InExchangeRatePairDTO,
+    ExchangeRateUpdateDTO,
+    ExchangeRateDTO,
+    ExchangeRateCreateDTO,
+    DecimalCommaDot,
+)
 
 __all__ = [
     "CurrencyCreateDTO",
@@ -9,4 +14,8 @@ __all__ = [
     "CurrencyCodeDTO",
     "InExchangeRatePairDTO",
     "CurrencyConversionResultDTO",
+    "ExchangeRateUpdateDTO",
+    "ExchangeRateDTO",
+    "ExchangeRateCreateDTO",
+    "DecimalCommaDot",
 ]

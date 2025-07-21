@@ -1,9 +1,10 @@
 # src/currency_exchange_app/models/exchange_rate.py
+from decimal import Decimal
+
 from sqlalchemy import DECIMAL, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.currency_exchange_app.db.base import Base
-from decimal import Decimal
 
 
 class ExchangeRatesORM(Base):

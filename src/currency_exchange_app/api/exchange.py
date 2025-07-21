@@ -2,12 +2,13 @@
 import logging
 from decimal import Decimal
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends
 
 from src.currency_exchange_app.api.dependencies import (
     get_exchange_service,
     validate_to_currency,
     validate_from_currency,
+    validate_amount,
 )
 from src.currency_exchange_app.schemas import CurrencyConversionResultDTO
 from src.currency_exchange_app.services import ExchangeService
@@ -18,13 +19,15 @@ logger = logging.getLogger("currency_exchange_app")
 
 @router.get("/exchange", response_model=CurrencyConversionResultDTO)
 async def convert_currency(
-        from_currency: str = Depends(validate_from_currency),
-        to_currency: str = Depends(validate_to_currency),
-        amount: Decimal = Query(..., gt=0),
-        service: ExchangeService = Depends(get_exchange_service),
+    from_currency: str = Depends(validate_from_currency),
+    to_currency: str = Depends(validate_to_currency),
+    amount: Decimal = Depends(validate_amount),
+    service: ExchangeService = Depends(get_exchange_service),
 ):
     logger.info(
-        "Запрос конвертации валют из '%s' в '%s' к-во '%s'",
-        from_currency, to_currency, amount,
+        "Currency conversion request from ‘%s’ to ‘%s’ amount '%s'",
+        from_currency,
+        to_currency,
+        amount,
     )
     return await service.convert_currency(from_currency, to_currency, amount)

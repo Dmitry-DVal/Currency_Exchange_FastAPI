@@ -1,17 +1,22 @@
 # src/currency_exchange_app/services/exchange.py
 import logging
 from decimal import Decimal
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.currency_exchange_app.exceptions import CurrencyNotFoundException
-from src.currency_exchange_app.schemas import CurrencyResponseDTO
-from src.currency_exchange_app.utils.decorators import db_exception_handler
+from src.currency_exchange_app.exceptions import (
+    CurrencyNotFoundException,
+    ExchangeRateNotFoundException,
+)
 from src.currency_exchange_app.repositories import (
     CurrencyRepository,
     ExchangeRateRepository,
 )
-from src.currency_exchange_app.schemas.exchange import CurrencyConversionResultDTO
-from src.currency_exchange_app.exceptions import ExchangeRateNotFoundException
+from src.currency_exchange_app.schemas import (
+    CurrencyResponseDTO,
+    CurrencyConversionResultDTO,
+)
+from src.currency_exchange_app.utils.decorators import db_exception_handler
 
 logger = logging.getLogger("currency_exchange_app")
 
@@ -91,6 +96,8 @@ class ExchangeService:
 
         if not currency_orm:
             logger.debug("Currency %s is missing from the DB.", code)
-            raise CurrencyNotFoundException(f"There is no currency with the code ‘{code}’.")
+            raise CurrencyNotFoundException(
+                f"There is no currency with the code ‘{code}’."
+            )
 
         return CurrencyResponseDTO.model_validate(currency_orm)

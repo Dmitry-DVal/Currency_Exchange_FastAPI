@@ -101,3 +101,8 @@ class ExchangeRateAlreadyExistsException(ExchangeRateBaseException):
 
     def __init__(self, message: str = "Exchange Rate Already Exists"):
         super().__init__(status_code=status.HTTP_409_CONFLICT, message=message)
+
+
+class ExchangeAmountValidationError(ExchangeRateBaseException):
+    def __init__(self, message: str = "The amount is not correct."):
+        super().__init__(status_code=status.HTTP_400_BAD_REQUEST, message=message)

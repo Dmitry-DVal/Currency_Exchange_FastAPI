@@ -2,6 +2,7 @@
 import logging
 
 from sqlalchemy.exc import SQLAlchemyError
+
 from src.currency_exchange_app.exceptions import (
     DatabaseException,
     CurrencyAlreadyExistsException,

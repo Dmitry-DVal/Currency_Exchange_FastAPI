@@ -19,11 +19,7 @@ class CurrencyConversionResultDTO(BaseModel):
 
     @field_serializer("rate", "amount", "converted_amount")
     def serialize_decimal(self, v: Decimal) -> float:
-        quantize_target = (
-            Decimal("0.000001")
-            if self.__class__.__name__ == "CurrencyConversionResultDTO"
-            else Decimal("0.01")
-        )
-        return float(v.quantize(quantize_target, rounding=ROUND_HALF_UP))
+        precision = Decimal("0.000001") if self.rate == v else Decimal("0.01")
+        return float(v.quantize(precision, rounding=ROUND_HALF_UP))
 
     model_config = ConfigDict(from_attributes=True)

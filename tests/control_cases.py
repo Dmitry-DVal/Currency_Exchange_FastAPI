@@ -36,7 +36,6 @@ INVALID_RATE_CASE_SAME_CURRENCY = {
     "rate": 14,
 }
 
-
 RATE_UPDATE_CASE = {"rate": 75.50}
 
 USD_RUB_RATE_RESPONSE = {
