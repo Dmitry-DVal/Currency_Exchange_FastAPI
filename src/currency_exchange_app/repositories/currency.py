@@ -15,36 +15,36 @@ class CurrencyRepository:
         self.session = session
 
     async def get_by_code(self, code: str) -> CurrenciesORM | None:
-        """Ищем валюту по коду. Возвращаем DTO или None (не найдено)."""
+        """Looking for currency by code. Return ORM or None (not found)."""
         stmt = select(CurrenciesORM).where(CurrenciesORM.code == code)
-        logger.debug("SQL запрос get_by_code: %s", stmt)
+        logger.debug("SQL request get_by_code: %s", stmt)
 
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
     async def get_all(self) -> Sequence[CurrenciesORM]:
-        """Получить все валюты из БД."""
+        """Get all currencies from the database."""
         stmt = select(CurrenciesORM)
-        logger.debug("Построение запроса query: %s", stmt)
+        logger.debug("Query construction: %s", stmt)
 
         result = await self.session.execute(stmt)
         logger.debug(
-            "Запрос к БД, результат сырые данные row в формате Алхимии result: %s",
+            "Query to the DB, the result is raw row data in Alchemy result format: %s",
             result,
         )
 
         return result.scalars().all()
 
     async def create(self, code: str, name: str, sign: str) -> CurrenciesORM:
-        """Добавить валюту в БД"""
+        """Add currency to the database."""
         new_currency = CurrenciesORM(code=code, name=name, sign=sign)
-        logger.debug("Создан ORM объект new_currency: %s", new_currency)
+        logger.debug("An ORM object new_currency has been created: %s", new_currency)
 
         self.session.add(new_currency)
-        logger.debug("Регистрируем объект new_currency в текущей сессии SQLAlchemy")
+        logger.debug("Register new_currency object in the current SQLAlchemy session")
 
         await self.session.commit()
-        logger.debug("Выполнение INSERT в БД")
+        logger.debug("INSERT execution in the database")
 
         await self.session.refresh(new_currency)
         return new_currency

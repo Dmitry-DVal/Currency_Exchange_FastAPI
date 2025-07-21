@@ -26,11 +26,11 @@ from .control_cases import (
             "EURUSD",
             404,
             {
-                "message": "Обменный курс 'base_currency='EUR' target_currency='USD'' отсутствует."
+                "message": "The exchange rate of ‘base_currency='EUR' target_currency='USD'’ is not available."
             },
         ),
         pytest.param(
-            "USDRUBEUR", 400, {"message": "Код валютной пары USDRUBEUR не корректен."}
+            "USDRUBEUR", 400, {"message": "The currency pair code 'USDRUBEUR' is not correct."}
         ),
     ],
 )
@@ -68,7 +68,7 @@ async def test_get_all_exchange_rates(async_client, _seed_db_with_rates):
         pytest.param(
             EUR_USD_RATE_CASE,
             404,
-            {"message": "Одна или обе валюты с кодом EUR/USD отсутствуют."},
+            {"message": "One or both currencies with code EUR/USD are missing."},
         ),
         pytest.param(INVALID_RATE_CASE, 400, INVALID_NEGATIVE_RATE_RESPONSE),
         pytest.param(
@@ -110,7 +110,7 @@ async def test_create_exchange_rate(
             RATE_UPDATE_CASE,
             404,
             {
-                "message": "Обменный курс 'base_currency='EUR' target_currency='USD'' отсутствует."
+                "message": "The exchange rate of ‘base_currency='EUR' target_currency='USD'’ is not available."
             },
         ),
         pytest.param(

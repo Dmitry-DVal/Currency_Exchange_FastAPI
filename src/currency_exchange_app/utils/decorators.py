@@ -26,9 +26,9 @@ def db_exception_handler(func):
             raise error
         except SQLAlchemyError as e:
             logger.error("Ошибка SQLAlchemy: %s", e)
-            raise DatabaseException("Ошибка базы данных")
+            raise DatabaseException("Database error")
         except Exception as e:
-            logger.critical("Глобальная ошибка", exc_info=True)
+            logger.critical("Global error", exc_info=True)
             raise DatabaseException(str(e))
 
     return wrapper

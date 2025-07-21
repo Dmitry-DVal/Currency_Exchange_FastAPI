@@ -26,21 +26,21 @@ def validate_currency_code(code: str = Path(...)) -> CurrencyCodeDTO:
     try:
         return CurrencyCodeDTO(code=code)
     except ValidationError:
-        raise CurrencyCodeError(f"Код валюты {code} не корректен.")
+        raise CurrencyCodeError(f"The currency code {code} is not correct.")
 
 
 def validate_from_currency(code: str = Query(..., alias="from")):
     try:
         return CurrencyCodeDTO(code=code).code
     except ValidationError:
-        raise CurrencyCodeError(f"Код валюты {code} не корректен.")
+        raise CurrencyCodeError(f"The currency code {code} is not correct.")
 
 
 def validate_to_currency(code: str = Query(..., alias="to")):
     try:
         return CurrencyCodeDTO(code=code).code
     except ValidationError:
-        raise CurrencyCodeError(f"Код валюты {code} не корректен.")
+        raise CurrencyCodeError(f"The currency code {code} is not correct.")
 
 
 def validate_currencies_pair_code(code_pair: str = Path(...)) -> InExchangeRatePairDTO:
@@ -49,7 +49,7 @@ def validate_currencies_pair_code(code_pair: str = Path(...)) -> InExchangeRateP
             base_currency=code_pair[:3], target_currency=code_pair[3:]
         )
     except ValidationError:
-        raise ExchangeRatePairCodeError(f"Код валютной пары {code_pair} не корректен.")
+        raise ExchangeRatePairCodeError(f"The currency pair code '{code_pair}' is not correct.")
 
 
 def get_currency_service(session: AsyncSession = Depends(get_db)) -> CurrencyService:

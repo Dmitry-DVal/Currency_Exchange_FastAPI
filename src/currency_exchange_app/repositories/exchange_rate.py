@@ -19,18 +19,18 @@ class ExchangeRateRepository:
     async def create(
         self, base_currency_id: int, target_currency_id: int, rate: Decimal
     ) -> ExchangeRatesORM:
-        """Создать обменны курс."""
+        """Creates an exchange rate."""
         new_ex_rate = ExchangeRatesORM(
             baseCurrencyId=base_currency_id,
             targetCurrencyId=target_currency_id,
             rate=rate,
         )
-        # Добавляем в базу
+        # Adding to the database
         self.session.add(new_ex_rate)
         await self.session.commit()
         await self.session.refresh(new_ex_rate)
 
-        # Обновляем объект
+        # Updating the object
         stmt = self.get_query_with_currencies().where(
             ExchangeRatesORM.id == new_ex_rate.id
         )
@@ -41,11 +41,11 @@ class ExchangeRateRepository:
     async def update(
         self, new_rate: Decimal, base_currency: str, target_currency: str
     ) -> ExchangeRatesORM | None:
-        """Обновить обменный курс."""
+        """Update the exchange rate."""
         existing_rate = await self.get_by_currency_pair(base_currency, target_currency)
         logger.debug("old_ex_rate %s", existing_rate)
         if not existing_rate:
-            logger.debug("Обменный курс отсутствует")
+            logger.debug("No exchange rate")
             return None
 
         existing_rate.rate = new_rate
@@ -61,21 +61,21 @@ class ExchangeRateRepository:
     async def get_by_currency_pair(
         self, base_currency: str, target_currency: str
     ) -> ExchangeRatesORM | None:
-        """Получить обменный курс по валютной паре."""
+        """Get the exchange rate for a currency pair."""
         stmt = self.get_query_with_currencies().where(
             ExchangeRatesORM.baseCurrency.has(code=base_currency),
             ExchangeRatesORM.targetCurrency.has(code=target_currency),
         )
 
-        logger.debug("SQL запрос get_by_code: %s", stmt)
+        logger.debug("SQL request get_by_currency_pair: %s", stmt)
 
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
     async def get_all(self) -> Sequence[ExchangeRatesORM]:
-        """Получить все обменные курсы из БД."""
+        """Get all exchange rates from the database."""
         stmt = self.get_query_with_currencies()
-        logger.debug("Построение запроса query: %s", stmt)
+        logger.debug("Constructing a query: %s", stmt)
 
         result = await self.session.execute(stmt)
         return result.scalars().all()
@@ -90,11 +90,11 @@ class ExchangeRateRepository:
     async def get_rate_by_pair(
         self, base_currency: str, target_currency: str
     ) -> Decimal | None:
-        """Возвращает курс для пары валют или None если не найден"""
+        """Returns the exchange rate for a currency pair or None if not found."""
         stmt = select(ExchangeRatesORM.rate).where(
             ExchangeRatesORM.baseCurrency.has(code=base_currency),
             ExchangeRatesORM.targetCurrency.has(code=target_currency),
         )
-        logger.debug("Построение запроса query: %s", stmt)
+        logger.debug("Constructing a query: %s", stmt)
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()

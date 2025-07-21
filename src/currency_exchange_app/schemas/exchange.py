@@ -7,7 +7,7 @@ from .currency import CurrencyResponseDTO
 
 
 class CurrencyConversionResultDTO(BaseModel):
-    """Результат конвертации валют"""
+    """Currency conversion result."""
 
     base_currency: CurrencyResponseDTO = Field(alias="baseCurrency")
     target_currency: CurrencyResponseDTO = Field(alias="targetCurrency")

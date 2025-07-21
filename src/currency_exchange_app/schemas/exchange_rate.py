@@ -24,8 +24,8 @@ class DecimalCommaDot(Decimal):
             raise ValueError("Некорректный формат числа")
 
 
-class InExchangeRatePairDTO(BaseModel):  # 1
-    """Базовая схема для валютной пары"""
+class InExchangeRatePairDTO(BaseModel):
+    """Basic scheme for a currency pair."""
 
     base_currency: str = Field(
         min_length=3,
@@ -45,8 +45,8 @@ class InExchangeRatePairDTO(BaseModel):  # 1
         return v.upper()
 
 
-class ExchangeRateCreateDTO(InExchangeRatePairDTO):  # 2
-    """Создание обменного курса"""
+class ExchangeRateCreateDTO(InExchangeRatePairDTO):
+    """Creating an exchange rate."""
 
     rate: DecimalCommaDot = Field(gt=0, examples=[Decimal("0.99")])
 
@@ -57,14 +57,14 @@ class ExchangeRateCreateDTO(InExchangeRatePairDTO):  # 2
         return self
 
 
-class ExchangeRateUpdateDTO(BaseModel):  # 3
-    """Обновление курса"""
+class ExchangeRateUpdateDTO(BaseModel):
+    """Course Update."""
 
     rate: DecimalCommaDot = Field(gt=0, examples=[Decimal("0.99")])
 
 
-class ExchangeRateDTO(BaseModel):  # 4
-    """Ответ API для обменного курса"""
+class ExchangeRateDTO(BaseModel):
+    """API response for the exchange rate."""
 
     id: int
     base_currency: CurrencyResponseDTO = Field(alias="baseCurrency")

@@ -25,7 +25,7 @@ from .control_cases import (
         pytest.param(
             "EUR", 404, {"message": "Валюта с кодом 'code='EUR'' отсутствует."}
         ),
-        pytest.param("usdEur", 400, {"message": "Код валюты usdEur не корректен."}),
+        pytest.param("usdEur", 400, {"message": "The currency code usdEur is not correct."}),
     ],
 )
 async def test_get_currency_by_code(

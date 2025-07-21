@@ -49,7 +49,7 @@ class ExchangeRateService:
         except IntegrityError as e:
             await self.exchange_rate_repo.session.rollback()
             if "foreign key constraint" in str(e).lower():
-                raise CurrencyNotFoundException("Одна или обе валюты не найдены")
+                raise CurrencyNotFoundException("One or both currencies not found")
             logger.error("Exchange rate exists: %s", e)
             raise ExchangeRateAlreadyExistsException(
                 f"Exchange Rate {exchange_rate_data.base_currency}/{exchange_rate_data.target_currency} Already Exists"
@@ -63,12 +63,11 @@ class ExchangeRateService:
 
         if not base_currency_orm or not target_currency_orm:
             logger.debug(
-                "Одна или обе валюты не найдены: %s", base_currency, target_currency
+                "One or both currencies not found: %s", base_currency, target_currency
             )
             raise CurrencyNotFoundException(
-                f"Одна или обе валюты с кодом {base_currency}/{target_currency} отсутствуют."
+                f"One or both currencies with code {base_currency}/{target_currency} are missing."
             )
-        # return base_currency_orm.id, target_currency_orm.id
         return int(base_currency_orm.id), int(target_currency_orm.id)
 
     @db_exception_handler
@@ -79,9 +78,9 @@ class ExchangeRateService:
             new_rate.rate, **code_pair.model_dump()
         )
         if not new_ex_rate_orm:
-            logger.debug("Обменный курс для пары %s отсутствует в БД", code_pair)
+            logger.debug("Exchange rate for pair %s is missing in the DB", code_pair)
             raise ExchangeRateNotFoundException(
-                f"Обменный курс '{code_pair}' отсутствует."
+                f"The exchange rate of ‘{code_pair}’ is not available."
             )
         return ExchangeRateDTO.model_validate(new_ex_rate_orm)
 
@@ -94,9 +93,9 @@ class ExchangeRateService:
         )
 
         if not ex_rate_orm:
-            logger.debug("Обменный курс для пары %s отсутствует в БД", code_pair)
+            logger.debug("Exchange rate for pair %s is missing in the database", code_pair)
             raise ExchangeRateNotFoundException(
-                f"Обменный курс '{code_pair}' отсутствует."
+                f"The exchange rate of ‘{code_pair}’ is not available."
             )
         return ExchangeRateDTO.model_validate(ex_rate_orm)
 
@@ -104,7 +103,7 @@ class ExchangeRateService:
     async def list_exchange_rates(self) -> list[ExchangeRateDTO]:
         ex_rates_orm_list = await self.exchange_rate_repo.get_all()
         logger.debug(
-            "Получение списка скаляров currencies_orm длиной: %s",
+            "Getting the list of currencies_orm scalars with length: %s",
             len(ex_rates_orm_list),
         )
         return [ExchangeRateDTO.model_validate(c) for c in ex_rates_orm_list]

@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 
 
 class AppBaseException(Exception):
-    """Базовое исключение приложения"""
+    """Basic application exception"""
 
     def __init__(self, status_code: int, message: str):
         self.status_code = status_code
@@ -17,13 +17,13 @@ class AppBaseException(Exception):
 
 
 class CurrencyBaseException(AppBaseException):
-    """Базовое исключение для валюты"""
+    """Basic currency exception"""
 
 
 class CurrencyCodeError(CurrencyBaseException):
     """
-    400: Код валюты не корректен
-    Пример:
+    400: Currency code is not correct
+    Example:
         {"message":"Код валюты -3245 не корректен."}
     """
 
@@ -33,9 +33,9 @@ class CurrencyCodeError(CurrencyBaseException):
 
 class CurrencyNotFoundException(CurrencyBaseException):
     """
-    404: Валюта не существует
-    Пример:
-        {"message":"Код валюты USr отсутствует."}
+    404: The currency doesn't exist.
+    Example:
+        {"message":"One or both currencies not found"}
     """
 
     def __init__(self, message: str = "Not found"):
@@ -44,8 +44,8 @@ class CurrencyNotFoundException(CurrencyBaseException):
 
 class DatabaseException(AppBaseException):
     """
-    500: Ошибка базы данных или соединения.
-    Пример:
+    500: Database or connection error.
+    Example:
         {"message":"password authentication failed for user \"user_db"}
     """
 
@@ -57,9 +57,9 @@ class DatabaseException(AppBaseException):
 
 class CurrencyAlreadyExistsException(CurrencyBaseException):
     """
-    409: Валюта уже существует
-    Пример:
-        {"message": "Currency USD already exists"}
+    409: The currency already exists
+    Example:
+        {"message": "Currency already exists"}
     """
 
     def __init__(self, message: str = "Currency already exists"):
@@ -67,14 +67,14 @@ class CurrencyAlreadyExistsException(CurrencyBaseException):
 
 
 class ExchangeRateBaseException(AppBaseException):
-    """Базовое исключение для обменных курсов."""
+    """The basic exception for exchange rates."""
 
 
 class ExchangeRatePairCodeError(ExchangeRateBaseException):
     """
-    400: Код валюты не корректен
-    Пример:
-        {"message":"Код валютной пары U3DIU7 не корректен."}
+    400: Currency code is not correct
+    Example:
+        {"message":"The currency pair code 'U3DIU7' is not correct."}
     """
 
     def __init__(self, message: str = "Bad request"):
@@ -83,9 +83,9 @@ class ExchangeRatePairCodeError(ExchangeRateBaseException):
 
 class ExchangeRateNotFoundException(ExchangeRateBaseException):
     """
-    404: Обменный курс не существует
-    Пример:
-        {"message":"Обменный курс 'USDFRN' отсутствует."}
+    404: There is no exchange rate
+    Example:
+        {"message":"The exchange rate of ‘USDFRL’ is not available."}
     """
 
     def __init__(self, message: str = "Not found"):
@@ -94,8 +94,8 @@ class ExchangeRateNotFoundException(ExchangeRateBaseException):
 
 class ExchangeRateAlreadyExistsException(ExchangeRateBaseException):
     """
-    409: Валютный курс уже существует
-    Пример:
+    409: The exchange rate already exists
+    Example:
         {"message": "Exchange Rate USDRUB Already Exists"}
     """
 

@@ -4,7 +4,7 @@ import re
 
 
 class CurrencyCodeDTO(BaseModel):
-    """Только код валюты для поиска"""
+    """Just the currency code to look up."""
 
     code: str = Field(
         min_length=3,
@@ -19,7 +19,7 @@ class CurrencyCodeDTO(BaseModel):
 
 
 class CurrencyCreateDTO(CurrencyCodeDTO):
-    """Данные для создания валюты"""
+    """Data to create the currency."""
 
     name: str = Field(
         min_length=3,
@@ -40,7 +40,7 @@ class CurrencyCreateDTO(CurrencyCodeDTO):
 
         if not re.fullmatch(r"^[A-Za-z\s]+$", v):
             raise ValueError(
-                "Название должно содержать только латинские буквы и пробелы"
+                "The name should contain only Latin letters and spaces"
             )
         v = v.title()
         v = " ".join(v.split())
@@ -48,7 +48,7 @@ class CurrencyCreateDTO(CurrencyCodeDTO):
 
 
 class CurrencyResponseDTO(CurrencyCreateDTO):
-    """Полные данные валюты (ответ API)"""
+    """Complete currency data (API response)."""
 
     id: int = Field(
         examples=["1"],

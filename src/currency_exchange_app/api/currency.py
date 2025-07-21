@@ -24,7 +24,7 @@ async def get_currency(
     code_dto: CurrencyCodeDTO = Depends(validate_currency_code),
     service: CurrencyService = Depends(get_currency_service),
 ) -> CurrencyResponseDTO:
-    logger.debug("Запрос валюты: %s", code_dto.code)
+    logger.debug("Currency Request: %s", code_dto.code)
     return await service.get_currency_by_code(code_dto)
 
 
@@ -32,7 +32,7 @@ async def get_currency(
 async def get_currencies(
     service: CurrencyService = Depends(get_currency_service),
 ) -> list[CurrencyResponseDTO]:
-    logger.debug("Запрос списка всех валют")
+    logger.debug("Request a list of all currencies.")
     return await service.get_currencies()
 
 
@@ -41,5 +41,5 @@ async def create_currency(
     currency_data: Annotated[CurrencyCreateDTO, Form()],
     service: CurrencyService = Depends(get_currency_service),
 ) -> CurrencyResponseDTO:
-    logger.debug("Запрос добавления валюты: %s", currency_data)
+    logger.debug("Request to add currency: %s", currency_data)
     return await service.create_currency(currency_data)

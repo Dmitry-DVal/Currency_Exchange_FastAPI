@@ -38,7 +38,7 @@ async def test_convert_reverse(async_client, _seed_db_with_rates):
         (
             {"from": "USD", "to": "ABC", "amount": 10},
             404,
-            "Валюта с кодом 'ABC' отсутствует.",
+            "There is no currency with the code",
         ),
     ],
 )
