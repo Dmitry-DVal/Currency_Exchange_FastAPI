@@ -13,9 +13,9 @@ COPY pyproject.toml poetry.lock ./
 RUN pip install --upgrade pip && pip install poetry
 
 # Настройка poetry и установка зависимостей
-RUN poetry config virtualenvs.create false \
-  && poetry install --no-interaction --no-dev \
-  && poetry add gunicorn \
+RUN poetry config virtualenvs.create false && \
+    poetry install --no-interaction --without dev --no-root && \
+    poetry add gunicorn
 
 
 # Копируем остальные файлы проекта
