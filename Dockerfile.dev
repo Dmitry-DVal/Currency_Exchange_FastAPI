@@ -14,9 +14,7 @@ RUN pip install --upgrade pip && pip install poetry
 
 # Настройка poetry и установка зависимостей
 RUN poetry config virtualenvs.create false \
-  && poetry install --no-interaction --no-dev \
-  && poetry add gunicorn \
-
+  && poetry install --no-interaction --no-root
 
 # Копируем остальные файлы проекта
 COPY . .
@@ -24,5 +22,5 @@ COPY . .
 # Открываем порт
 EXPOSE 8000
 
-# Запуск через gunicorn
-CMD ["gunicorn", "src.currency_exchange_app.main:app", "-k", "uvicorn.workers.UvicornWorker", "-b", "0.0.0.0:8000"]
+# Запуск через uvicorn
+CMD ["uvicorn", "src.currency_exchange_app.main:app", "--host", "0.0.0.0", "--port", "8000"]
