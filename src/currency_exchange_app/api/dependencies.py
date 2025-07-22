@@ -10,12 +10,10 @@ from src.currency_exchange_app.db import get_db
 from src.currency_exchange_app.exceptions import (
     CurrencyCodeError,
     ExchangeRatePairCodeError,
-    ExchangeAmountValidationError,
 )
 from src.currency_exchange_app.schemas import (
     CurrencyCodeDTO,
     InExchangeRatePairDTO,
-    DecimalCommaDot,
 )
 from src.currency_exchange_app.services import (
     CurrencyService,
@@ -45,13 +43,6 @@ def validate_to_currency(code: str = Query(..., alias="to")):
         return CurrencyCodeDTO(code=code).code
     except ValidationError:
         raise CurrencyCodeError(f"The currency code {code} is not correct.")
-
-
-def validate_amount(amount: str = Query(...)):
-    try:
-        return DecimalCommaDot().validate(amount)
-    except ValueError:
-        raise ExchangeAmountValidationError(f"The amount '{amount}' is not correct.")
 
 
 def validate_currencies_pair_code(code_pair: str = Path(...)) -> InExchangeRatePairDTO:

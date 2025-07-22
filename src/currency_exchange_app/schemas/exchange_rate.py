@@ -21,7 +21,7 @@ class DecimalCommaDot(Decimal):
         try:
             return Decimal(v.replace(",", "."))
         except InvalidOperation:
-            raise ValueError("Некорректный формат числа")
+            raise ValueError("Incorrect number format")
 
 
 class InExchangeRatePairDTO(BaseModel):
@@ -60,7 +60,7 @@ class ExchangeRateCreateDTO(InExchangeRatePairDTO):
 class ExchangeRateUpdateDTO(BaseModel):
     """Course Update."""
 
-    rate: DecimalCommaDot = Field(gt=0, examples=[Decimal("0.99")])
+    rate: DecimalCommaDot = Field(gt=0, examples=[Decimal("0.99")], le=10_000)
 
 
 class ExchangeRateDTO(BaseModel):
