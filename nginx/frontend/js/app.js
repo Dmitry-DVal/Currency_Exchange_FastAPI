@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    const host = "http://localhost:8000"
+    const host = "/api"
 
     // Fetch the list of currencies and populate the select element
     function requestCurrencies() {
@@ -209,17 +209,9 @@ $(document).ready(function() {
         $.ajax({
             url: `${host}/exchange?from=${baseCurrency}&to=${targetCurrency}&amount=${amount}`,
             type: "GET",
-            // data: "$("#add-exchange-rate").serialize()",
             success: function(data) {
                 $("#convert-converted-amount").val(data.convertedAmount);
             },
-//            error: function(jqXHR, textStatus, errorThrown) {
-//                const error = JSON.parse(jqXHR.responseText);
-//                const toast = $('#api-error-toast');
-//
-//                $(toast).find('.toast-body').text(error.message);
-//                toast.toast("show");
-//            }
             error: function(jqXHR, textStatus, errorThrown) {
                 const error = JSON.parse(jqXHR.responseText);
                 const toast = $('#api-error-toast');

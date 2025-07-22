@@ -1,0 +1,59 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: currency_backend
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=db
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    restart: always
+    networks:
+      - backend
+
+  db:
+    image: postgres:15-alpine
+    container_name: currency_db
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - backend
+
+  nginx:
+    image: nginx:latest
+    container_name: currency_nginx
+    restart: always
+    volumes:
+      - ./nginx/frontend:/usr/share/nginx/html
+      - ./nginx/dev.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - backend
+
+volumes:
+  postgres_data:
+
+networks:
+  backend:
+    driver: bridge
